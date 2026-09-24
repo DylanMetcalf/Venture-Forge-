@@ -72,6 +72,25 @@ describe("closing a session", () => {
     expect(sessionStatus(s.sessions[1])).toBe("consumed");
   });
 
+  it("keeps evidence in step when a closed session is edited, without re-closing", () => {
+    let s = updateSession(defaultState(), 1, { responses: { act: WORK } }, NOW);
+    s = closeSession(s, 1, NOW);
+    s = updateSession(s, 1, { responses: { build: "Pinned the reframe above my desk." }, projectId: "p9" }, NOW);
+    expect(s.evidence).toHaveLength(1);
+    expect(s.evidence[0]).toMatchObject({ projectId: "p9" });
+    expect(s.evidence[0]!.note).toContain("Pinned the reframe");
+  });
+
+  it("keeps the original close date when a session is edited or re-closed later", () => {
+    let s = updateSession(defaultState(), 1, { responses: { act: WORK } }, NOW);
+    s = closeSession(s, 1, NOW);
+    const later = new Date(2026, 8, 27, 9, 0);
+    s = updateSession(s, 1, { responses: { think: "more" } }, later);
+    s = closeSession(s, 1, later);
+    expect(s.sessions[1]!.closedOn).toBe("2026-09-24");
+    expect(s.evidence[0]!.date).toBe("2026-09-24");
+  });
+
   it("links evidence to the project the session was applied to", () => {
     let s = updateSession(defaultState(), 1, { responses: { act: WORK }, projectId: "p1" }, NOW);
     s = closeSession(s, 1, NOW);

@@ -78,9 +78,9 @@ export type SessionPatch = {
   projectId?: string | null;
 };
 
-/** Saves draft work. Allowed on closed sessions too; call closeSession again to refresh evidence. */
+/** Saves work. Editing an already-closed session keeps its evidence in step. */
 export function updateSession(state: AppState, day: number, patch: SessionPatch, now: Date): AppState {
-  return withSession(state, day, (rec) => {
+  const next = withSession(state, day, (rec) => {
     if (patch.responses) Object.assign(rec.responses, patch.responses);
     if (patch.reflection) Object.assign(rec.reflection, patch.reflection);
     if (patch.projectId !== undefined) {
@@ -89,6 +89,8 @@ export function updateSession(state: AppState, day: number, patch: SessionPatch,
     }
     rec.startedAt ??= now.toISOString();
   });
+  if (next.sessions[day]!.closedAt) syncSessionEvidence(next, day, now);
+  return next;
 }
 
 function evidenceNote(rec: SessionRecord): string {
@@ -100,36 +102,45 @@ function evidenceNote(rec: SessionRecord): string {
 
 /**
  * Close (or re-close) a session. If it contains real work, the session's
- * single evidence item is created or updated; if the work was removed, it's
- * withdrawn. Session evidence is never duplicated.
+ * single evidence item is created or updated.
  */
 export function closeSession(state: AppState, day: number, now: Date): AppState {
-  const content = getDay(day);
   const blockers = closeBlockers(sessionFor(state, day));
   if (blockers.length) throw new DomainError(blockers[0]!);
   const next = withSession(state, day, (rec) => {
-    rec.closedAt = now.toISOString();
-    rec.closedOn = localDate(now);
+    rec.closedAt ??= now.toISOString();
+    rec.closedOn ??= localDate(now);
   });
-  const rec = next.sessions[day]!;
-  const existing = next.evidence.findIndex((e) => e.source.kind === "session" && e.source.day === day);
+  syncSessionEvidence(next, day, now);
+  return next;
+}
+
+/**
+ * Makes the session's evidence match its recorded work (mutates `state`, which
+ * must already be a fresh copy). Session evidence is never duplicated; if the
+ * work is removed, the evidence is withdrawn.
+ */
+function syncSessionEvidence(state: AppState, day: number, now: Date): void {
+  const content = getDay(day)!;
+  const rec = state.sessions[day]!;
+  const existing = state.evidence.findIndex((e) => e.source.kind === "session" && e.source.day === day);
   if (hasRecordedWork(rec)) {
+    const prev = existing >= 0 ? state.evidence[existing] : undefined;
     const item: Evidence = {
-      id: existing >= 0 ? next.evidence[existing]!.id : newId(),
-      createdAt: existing >= 0 ? next.evidence[existing]!.createdAt : now.toISOString(),
-      date: rec.closedOn!,
-      title: `Day ${day} — ${content!.theme}`,
+      id: prev?.id ?? newId(),
+      createdAt: prev?.createdAt ?? now.toISOString(),
+      date: rec.closedOn ?? localDate(now),
+      title: `Day ${day} — ${content.theme}`,
       note: evidenceNote(rec),
-      skills: [...content!.skills],
-      projectId: rec.projectId,
+      skills: [...content.skills],
       source: { kind: "session", day },
     };
-    if (existing >= 0) next.evidence[existing] = item;
-    else next.evidence.push(item);
+    if (rec.projectId) item.projectId = rec.projectId;
+    if (existing >= 0) state.evidence[existing] = item;
+    else state.evidence.push(item);
   } else if (existing >= 0) {
-    next.evidence.splice(existing, 1);
+    state.evidence.splice(existing, 1);
   }
-  return next;
 }
 
 export function reopenSession(state: AppState, day: number): AppState {

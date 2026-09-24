@@ -24,11 +24,11 @@ content (data) ──► domain (plain-function rules) ──► store ──►
 | Closing needs something written and, if a promise was made, the promise graded. | `closeBlockers` |
 | Each session has at most one evidence item, kept in step with its work, skills and project. | `syncSessionEvidence` |
 | Streak = consecutive **local** calendar days with a closed session. | `selectors.ts#streak` |
-| Raising a skill's self-rating needs a justification; all changes are kept as history. | `actions.ts#assessSkill` |
+| Skill levels come from evidence (`capability.ts#levelFor`); self-rated confidence is separate, and raising it needs a justification. | `capability.ts`, `actions.ts#rateConfidence` |
 
 ## State shape
 
-`AppState` in `src/domain/types.ts` (`schemaVersion: 2`). Sessions are keyed by curriculum day
+`AppState` in `src/domain/types.ts` (`schemaVersion: 3`). Sessions are keyed by curriculum day
 and hold the promise, responses (think/act/build), reflection, linked project and close timestamps.
 Bump `SCHEMA_VERSION` and add a migration step in `migrate.ts` for any breaking change.
 

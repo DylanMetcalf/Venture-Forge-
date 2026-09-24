@@ -32,7 +32,7 @@ as *demonstrated* only when real work is recorded; otherwise it's *consumed*.
 | **Memory** | Structured, searchable goals, context, preferences, lessons, patterns and commitments. |
 | **Capture** | One tap from anywhere (text or dictation) into today's plan, the vault, evidence or memory. |
 
-**Live app:** https://dylanmetcalf.github.io/Venture-Forge-/ (after the one-time setup below).
+**Live app:** https://dylanmetcalf.github.io/Venture-Forge-/
 
 ## Use it on your phone
 
@@ -46,7 +46,7 @@ Data is stored on the device, inside that home-screen app. Export a backup from
 ## Hosting (GitHub Pages, free)
 
 Every push to `main` runs `.github/workflows/deploy.yml`, which tests, builds and
-publishes the site. One-time setup in the GitHub repository:
+publishes the site. One-time setup in the GitHub repository (done for this repo):
 
 1. **Settings → General → Default branch** → switch to `main`.
 2. **Settings → Pages → Build and deployment → Source** → **GitHub Actions**.

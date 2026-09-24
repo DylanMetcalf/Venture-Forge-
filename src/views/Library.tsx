@@ -19,7 +19,7 @@ export function LibraryView({ param }: { param?: string }) {
       {items.length === 0 ? <Empty>Nothing matches. The library grows as more of the curriculum is written.</Empty> : (
         items.map((c) => (
           <details key={c.id} id={`lib-${c.id}`} className="card" open={param === c.id}>
-            <summary><strong>{c.term}</strong><span className="faint" aria-hidden="true">▾</span></summary>
+            <summary><strong className="serif" style={{ fontSize: 17 }}>{c.term}</strong><span className="chev" aria-hidden="true">⌄</span></summary>
             <div className="muted small" style={{ marginTop: 8 }}>{c.short}</div>
             <div className="lib-body small">
               <h4>Explanation</h4><div>{c.medium}</div>

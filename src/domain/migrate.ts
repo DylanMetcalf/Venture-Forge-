@@ -152,6 +152,7 @@ function normalizeV2(raw: Obj): AppState {
   const state = defaultState();
   const settings = isObj(raw.settings) ? raw.settings : {};
   state.settings.theme = oneOf<Theme>(settings.theme, ["system", "light", "dark"], "system");
+  state.settings.name = (str(settings.name) ?? "").slice(0, 60);
   state.currentDay = clamp(Math.round(num(raw.currentDay) ?? 1), 1, PROGRAM_LENGTH);
   if (isObj(raw.sessions)) {
     for (const [k, v] of Object.entries(raw.sessions)) {

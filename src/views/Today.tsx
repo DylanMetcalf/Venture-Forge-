@@ -1,10 +1,20 @@
-import { FORMATS, LAST_AUTHORED_DAY, getDay, phaseForDay, weekForDay } from "../content/curriculum";
+import { FORMATS, LAST_AUTHORED_DAY, PILLARS, getDay, isReviewFormat, phaseForDay, weekForDay } from "../content/curriculum";
+import type { PillarId } from "../content/types";
 import { href } from "../app/router";
 import { useAction, useAppState, useToday } from "../app/context";
-import { StatusPill } from "../components/ui";
-import { progressSummary } from "../domain/selectors";
-import { goToDay, sessionStatus } from "../domain/sessions";
-import { addDays } from "../domain/util";
+import { pillarStats, progressSummary } from "../domain/selectors";
+import { goToDay, hasRecordedWork, isClosed, sessionFor, sessionStatus } from "../domain/sessions";
+import { addDays, isBlank } from "../domain/util";
+
+const TRAINED_PILLARS: PillarId[] = ["mind", "business", "build", "influence", "judgement"];
+const SHORT: Record<PillarId, string> = { mind: "Mind", business: "Biz", build: "Build", influence: "People", judgement: "Judge", field: "Field" };
+
+function greeting(hour: number): string {
+  if (hour < 5) return "Late night";
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  return "Good evening";
+}
 
 export function TodayView() {
   const state = useAppState();
@@ -13,127 +23,142 @@ export function TodayView() {
   const d = state.currentDay;
   const content = getDay(d);
   const phase = phaseForDay(d);
-  const rec = state.sessions[d];
-  const status = sessionStatus(rec);
+  const rec = sessionFor(state, d);
+  const status = sessionStatus(state.sessions[d]);
   const p = progressSummary(state, today);
+  const now = new Date();
+  const name = state.settings.name;
 
-  const cta = status === "not_started" ? "Start today's session" : status === "in_progress" ? "Continue session" : "Review today's session";
-  const nextDay = getDay(d + 1);
-  const activeProjects = state.projects.filter((pr) => !["Parked", "Abandoned", "Live"].includes(pr.stage) && pr.nextAction);
+  const steps = [
+    { label: "Commit", done: !isBlank(rec.commitment) },
+    { label: "Do the work", done: hasRecordedWork(rec) },
+    { label: "Close out", done: isClosed(status) },
+  ];
+  const nowIndex = steps.findIndex((s) => !s.done);
+  const cta = status === "not_started" ? "Begin today's session" : isClosed(status) ? "Review session" : "Continue session";
+
+  const weekStart = (weekForDay(d) - 1) * 7 + 1;
+  const weekDays = Array.from({ length: 7 }, (_, i) => weekStart + i);
+  const stats = pillarStats(state);
+  const maxPillar = Math.max(1, ...TRAINED_PILLARS.map((pl) => stats[pl].demonstrated));
   const staleDecisions = state.decisions.filter((dec) => !dec.outcomeNote && dec.date <= addDays(today, -14));
+  const phaseDay = d - phase.range[0] + 1;
+  const phaseLen = phase.range[1] - phase.range[0] + 1;
 
   return (
-    <div className="stack">
+    <div className="stack-lg">
+      <header>
+        <h1 className="greeting">{greeting(now.getHours())}{name ? `, ${name}` : ""}.</h1>
+        <div className="dateline">
+          {now.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" })} · Day {d} of 365 · {phase.name}
+        </div>
+      </header>
+
+      <nav className="week" aria-label={`Week ${weekForDay(d)}`}>
+        {weekDays.map((day) => {
+          const c = getDay(day);
+          const st = sessionStatus(state.sessions[day]);
+          const cls = ["week-day", c ? (isClosed(st) ? "closed" : st) : "unwritten", day === d ? "current" : ""].join(" ");
+          const label = c ? `Day ${day}, ${PILLARS[c.pillar].name}: ${c.theme}` : `Day ${day}, not yet written`;
+          const inner = (
+            <>
+              <span>{c ? (isReviewFormat(c.format) ? "Review" : SHORT[c.pillar]) : "—"}</span>
+              <span className="num">{day}</span>
+              <span className="dot" />
+            </>
+          );
+          return c ? (
+            <a key={day} className={cls} data-pillar={c.pillar} href={href("session", day)} aria-label={label} aria-current={day === d ? "step" : undefined}>{inner}</a>
+          ) : (
+            <span key={day} className={cls} data-pillar="field" aria-label={label}>{inner}</span>
+          );
+        })}
+      </nav>
+
       {content ? (
-        <section className="hero" aria-labelledby="today-theme">
-          <div className="phase">{phase.name} · Phase {phase.id} of 7 · Week {weekForDay(d)}</div>
-          <div className="daynum">Day {d}</div>
+        <section className="today-card" data-pillar={content.pillar} aria-labelledby="today-theme">
+          <div className="meta">
+            <span className="pillar-tag">{PILLARS[content.pillar].name}</span>
+            <span>{FORMATS[content.format]}</span>
+            <span>~{content.minutes} min</span>
+          </div>
           <h2 className="theme" id="today-theme">{content.theme}</h2>
-          <div className="row">
-            <StatusPill status={status} />
-            <span className="pill">{FORMATS[content.format]}</span>
-            <span className="pill">~{content.minutes} min</span>
-          </div>
-          <div className="brief">
-            <div>
-              <div className="k">Objective</div>
-              <div>{content.capability}</div>
-            </div>
-            <div>
-              <div className="k">Done when</div>
-              <div className="muted">{content.doneWhen}</div>
-            </div>
-          </div>
+          <p className="objective">{content.capability}</p>
+          <div className="done-when"><strong>Done when</strong>{content.doneWhen}</div>
+
+          <ol className="ritual" aria-label="Today's ritual">
+            {steps.map((s, i) => (
+              <li key={s.label} className={`ritual-step ${s.done ? "done" : i === nowIndex ? "now" : ""}`}>
+                <span className="tick" aria-hidden="true">✓</span>
+                <span>{s.label}<span className="sr-only">{s.done ? " — done" : ""}</span></span>
+              </li>
+            ))}
+          </ol>
+
           <div className="row">
             <a className="btn primary" href={href("session")}>{cta}</a>
-            {(status === "consumed" || status === "demonstrated") && (
-              <button className="btn" onClick={() => run((s) => goToDay(s, d + 1))}>
-                {nextDay ? `Continue to Day ${d + 1} →` : `Go to Day ${d + 1}`}
+            {isClosed(status) && (
+              <button className="btn ghost" onClick={() => run((s) => goToDay(s, d + 1))}>
+                {getDay(d + 1) ? `On to Day ${d + 1} →` : `Go to Day ${d + 1}`}
               </button>
             )}
           </div>
         </section>
       ) : (
-        <section className="hero">
-          <div className="phase">{phase.name} · Phase {phase.id} of 7</div>
-          <div className="daynum">Day {d}</div>
-          <p className="muted" style={{ marginTop: 10 }}>
-            There's no curriculum session today. Days 1–{LAST_AUTHORED_DAY} are written; Day {LAST_AUTHORED_DAY + 1} onward
-            hasn't been written yet, and won't be filled with placeholder content.
+        <section className="today-card">
+          <div className="meta"><span className="pillar-tag" data-pillar="field">Nothing scheduled</span></div>
+          <h2 className="theme">Day {d} isn't written yet.</h2>
+          <p className="objective muted">
+            Days 1–{LAST_AUTHORED_DAY} are ready. The rest are written in careful batches rather than filled with filler, so there's no
+            session today. Use the time for real work — then log what you prove.
           </p>
-          <p className="muted">
-            {activeProjects.length || staleDecisions.length
-              ? "The most useful thing today is real work on the projects and decisions below."
-              : "If there's nothing meaningful to do, that's fine: go and do real work, then log what you prove as evidence."}
-          </p>
-          <div className="row">
-            <a className="btn" href={href("evidence")}>Log evidence</a>
+          <div className="row" style={{ marginTop: 18 }}>
+            <a className="btn primary" href={href("evidence")}>Log evidence</a>
             <a className="btn ghost" href={href("roadmap")}>See the year</a>
           </div>
         </section>
       )}
 
-      {rec?.commitment && (
-        <section className="card">
-          <div className="eyebrow">Today's promise</div>
-          <div>{rec.commitment}</div>
-          <div style={{ marginTop: 8 }}>
-            {rec.commitmentKept === undefined ? (
-              <span className="faint small">Graded when you close out the session.</span>
-            ) : (
-              <span className={`pill ${rec.commitmentKept ? "sage" : "clay"}`}>{rec.commitmentKept ? "Kept" : "Not kept"}</span>
-            )}
-          </div>
-        </section>
-      )}
-
-      <section className="stats" aria-label="Progress">
-        <div className="stat"><div className="n">{p.demonstrated}</div><div className="l">days demonstrated</div></div>
-        <div className="stat"><div className="n">{p.consumed}</div><div className="l">days consumed only</div></div>
-        <div className="stat"><div className="n">{p.streak}</div><div className="l">day streak</div></div>
-        <div className="stat">
-          <div className="n">{p.commitmentsGraded ? `${p.commitmentsKept}/${p.commitmentsGraded}` : "—"}</div>
+      <section className="momentum" aria-label="Momentum">
+        <div><div className="n">{p.streak}</div><div className="l">day streak</div></div>
+        <div><div className="n">{p.demonstrated}</div><div className="l">demonstrated</div></div>
+        <div>
+          <div className="n">{p.commitmentsGraded ? `${Math.round((p.commitmentsKept / p.commitmentsGraded) * 100)}%` : "—"}</div>
           <div className="l">promises kept</div>
         </div>
       </section>
 
-      {activeProjects.length > 0 && (
-        <section className="card">
-          <div className="between"><div className="eyebrow">Project next actions</div><a className="faint tiny" href={href("projects")}>All projects</a></div>
-          {activeProjects.slice(0, 4).map((pr) => (
-            <div className="item-row" key={pr.id}>
-              <div>
-                <div>{pr.nextAction}</div>
-                <div className="faint tiny">{pr.name} · {pr.stage}</div>
-              </div>
-            </div>
-          ))}
-        </section>
-      )}
-
-      {staleDecisions.length > 0 && (
-        <section className="card">
-          <div className="eyebrow">Decisions waiting on an outcome review</div>
-          <p className="muted small">
-            {staleDecisions.length === 1 ? "One decision is" : `${staleDecisions.length} decisions are`} more than two weeks old with no
-            recorded outcome. Reviewing them is how judgement improves.
-          </p>
-          <a className="btn sm" href={href("decisions")}>Review decisions</a>
-        </section>
-      )}
-
-      <section className="card">
-        <div className="eyebrow">This phase — {phase.name}</div>
-        <div className="muted small">{phase.focus}</div>
+      <section aria-labelledby="balance-title">
+        <div className="between">
+          <h2 className="section-title" id="balance-title">Balance</h2>
+          <span className="faint tiny">sessions demonstrated</span>
+        </div>
+        {TRAINED_PILLARS.map((pl) => (
+          <div className="balance-row" key={pl} data-pillar={pl}>
+            <span className="pillar-tag" style={{ letterSpacing: ".04em" }}>{PILLARS[pl].name}</span>
+            <div className="bar" aria-hidden="true"><div style={{ width: `${(stats[pl].demonstrated / maxPillar) * 100}%` }} /></div>
+            <span className="count">{stats[pl].demonstrated}</span>
+          </div>
+        ))}
       </section>
 
-      <a className="card" href={href("freedom")} style={{ display: "block", textDecoration: "none" }}>
-        <div className="eyebrow">Freedom Index</div>
-        <div className="row">
-          <div className="serif" style={{ fontSize: 26 }}>{p.freedomComposite}</div>
-          <div className="muted small" style={{ flex: 1, minWidth: 180 }}>Self-rated. More capability, ownership and time — not just more busy.</div>
+      {staleDecisions.length > 0 && (
+        <a className="notice" href={href("decisions")} style={{ textDecoration: "none" }}>
+          <span>
+            {staleDecisions.length === 1 ? "One decision is" : `${staleDecisions.length} decisions are`} over two weeks old with no recorded outcome.
+          </span>
+          <span className="link-btn">Review →</span>
+        </a>
+      )}
+
+      <section>
+        <div className="between">
+          <h2 className="section-title">{phase.name}</h2>
+          <span className="faint tiny">Phase {phase.id} of 7 · day {Math.min(phaseDay, phaseLen)} of {phaseLen}</span>
         </div>
-      </a>
+        <p className="muted small">{phase.focus}</p>
+        <div className="progress" aria-hidden="true"><div style={{ width: `${(Math.min(phaseDay, phaseLen) / phaseLen) * 100}%` }} /></div>
+      </section>
     </div>
   );
 }

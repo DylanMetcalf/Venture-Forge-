@@ -1,7 +1,7 @@
 // Read-only derivations from state. These are the questions the app (and,
 // later, Founder OS integrations like JARVIS) can ask about progress.
 import { ALL_SKILLS, LAST_AUTHORED_DAY, getDay, isReviewFormat } from "../content/curriculum";
-import type { SkillId } from "../content/types";
+import type { PillarId, SkillId } from "../content/types";
 import { isClosed, sessionStatus } from "./sessions";
 import { FREEDOM_KEYS, type AppState, type LocalDate, type SessionRecord } from "./types";
 import { addDays } from "./util";
@@ -131,4 +131,24 @@ export function reviewEntries(state: AppState): ReviewEntry[] {
         avoided: rec.reflection.avoided ?? "",
       };
     });
+}
+
+export interface PillarStat {
+  pillar: PillarId;
+  closed: number;
+  demonstrated: number;
+}
+
+/** Closed and demonstrated sessions per pillar — how balanced the training is. */
+export function pillarStats(state: AppState): Record<PillarId, PillarStat> {
+  const out = {} as Record<PillarId, PillarStat>;
+  for (const p of ["mind", "business", "build", "influence", "judgement", "field"] as PillarId[]) out[p] = { pillar: p, closed: 0, demonstrated: 0 };
+  for (const [day, rec] of sessionEntries(state)) {
+    const c = getDay(day);
+    if (!c) continue;
+    const status = sessionStatus(rec);
+    if (isClosed(status)) out[c.pillar].closed++;
+    if (status === "demonstrated") out[c.pillar].demonstrated++;
+  }
+  return out;
 }

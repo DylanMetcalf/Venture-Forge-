@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Icon } from "../components/Icon";
+import { BrandMark, Icon } from "../components/Icon";
 import { ALL_ITEMS, MORE_ITEMS, NAV_GROUPS, TABS } from "./nav";
 import { useAppState, useStore } from "./context";
 import { href, useRoute, type RouteName } from "./router";
@@ -16,6 +16,9 @@ import { ReviewsView } from "../views/Reviews";
 import { FreedomView } from "../views/Freedom";
 import { SettingsView } from "../views/Settings";
 import { MoreView } from "../views/More";
+
+/** Views that draw their own header. Every other view gets a standard page title. */
+const OWN_HEADER: RouteName[] = ["today", "session"];
 
 function View({ name, param }: { name: RouteName; param?: string }) {
   switch (name) {
@@ -61,16 +64,18 @@ export function App() {
   return (
     <div className="app">
       <nav className="rail" aria-label="Main">
-        <div className="rail-brand">
-          <div className="mark">Venture Forge</div>
-          <div className="sub">Day {state.currentDay} of 365</div>
-        </div>
+        <a className="brand" href={href("today")}>
+          <BrandMark className="brand-mark" />
+          <div>
+            <div className="brand-name">Venture Forge</div>
+            <div className="brand-sub">Day {state.currentDay} of 365</div>
+          </div>
+        </a>
         {NAV_GROUPS.map((g) => (
           <div key={g.title}>
             <div className="rail-section">{g.title}</div>
             {g.items.map((i) => (
               <a key={i.r} className="rail-link" href={href(i.r)} aria-current={route.name === i.r ? "page" : undefined}>
-                <span className="dot" />
                 {i.label}
               </a>
             ))}
@@ -80,11 +85,11 @@ export function App() {
       </nav>
 
       <div className="main">
-        <header className="topbar">
-          <h1>{title}</h1>
-        </header>
-        <main className={`content ${route.name === "roadmap" ? "wide" : ""}`}>
+        <main className={`content ${route.name === "roadmap" ? "wide" : ""}`} key={`${route.name}/${route.param ?? ""}`}>
           {saveError && <div className="banner" role="alert">{saveError}</div>}
+          {!OWN_HEADER.includes(route.name) && (
+            <header className="page-head"><h1>{title}</h1></header>
+          )}
           <View name={route.name} param={route.param} />
         </main>
       </div>

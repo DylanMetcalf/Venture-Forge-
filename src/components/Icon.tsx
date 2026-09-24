@@ -1,8 +1,8 @@
 const PATHS = {
-  today: "M3 11.5 12 4l9 7.5M5.5 9.5V20h13V9.5",
-  session: "M5 4h10l4 4v12H5zM15 4v4h4M8.5 12h7M8.5 16h5",
-  projects: "M4 7h16v12H4zM9 7V5h6v2",
-  evidence: "M5 12.5 10 17.5 19.5 7",
+  today: "M12 3v2M12 19v2M4.2 7l1.7 1M18.1 15l1.7 1M4.2 17l1.7-1M18.1 9l1.7-1M8 12a4 4 0 1 0 8 0 4 4 0 0 0-8 0z",
+  session: "M6 4h9l3 3v13H6zM9 11h6M9 15h4",
+  roadmap: "M4 6.5 9 4l6 2.5L20 4v13.5L15 20l-6-2.5L4 20zM9 4v13.5M15 6.5V20",
+  skills: "M12 3 20 7.5v9L12 21 4 16.5v-9zM12 12l8-4.5M12 12v9M12 12 4 7.5",
   more: "M5 12h.01M12 12h.01M19 12h.01",
 } as const;
 
@@ -10,8 +10,19 @@ export type IconName = keyof typeof PATHS;
 
 export function Icon({ name }: { name: IconName }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={name === "more" ? 3 : 1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={name === "more" ? 3 : 1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d={PATHS[name]} />
+    </svg>
+  );
+}
+
+/** The Venture Forge mark: a forged "V" under a hammer-line. Also used for the app icon. */
+export function BrandMark({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 64 64" aria-hidden="true">
+      <rect width="64" height="64" rx="15" fill="#15181f" />
+      <path d="M20 16h24" stroke="#cfa25a" strokeWidth="3" strokeLinecap="round" opacity=".55" />
+      <path d="M19 24l13 25 13-25" fill="none" stroke="#cfa25a" strokeWidth="5.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

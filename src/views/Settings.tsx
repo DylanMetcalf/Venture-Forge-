@@ -1,6 +1,6 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { usePersistent, useAction, useAppState, useStore, useToast } from "../app/context";
-import { setTheme } from "../domain/actions";
+import { setName, setTheme } from "../domain/actions";
 import type { Theme } from "../domain/types";
 import { backupFilename, exportBackup, parseBackup } from "../storage/backup";
 
@@ -17,6 +17,7 @@ export function SettingsView() {
   const toast = useToast();
   const persistent = usePersistent();
   const fileInput = useRef<HTMLInputElement>(null);
+  const [name, setNameDraft] = useState(state.settings.name);
 
   function download() {
     const now = new Date();
@@ -47,6 +48,14 @@ export function SettingsView() {
 
   return (
     <div className="stack">
+      <section className="card">
+        <label className="eyebrow" htmlFor="name" style={{ display: "block" }}>Your name</label>
+        <div className="row">
+          <input id="name" type="text" value={name} placeholder="Used in the greeting on Today" onChange={(e) => setNameDraft(e.target.value)}
+            onBlur={() => run((s) => setName(s, name))} style={{ flex: 1, minWidth: 180 }} />
+        </div>
+      </section>
+
       <section className="card">
         <div className="eyebrow">Appearance</div>
         <div className="row" role="radiogroup" aria-label="Theme">
@@ -79,6 +88,16 @@ export function SettingsView() {
             onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void restore(f); }} />
         </div>
         <div className="hint">Restore also accepts data exported from the original prototype.</div>
+      </section>
+
+      <section className="card">
+        <div className="eyebrow">Install on your phone</div>
+        <p className="small muted"><strong>iPhone:</strong> open this page in Safari → Share → Add to Home Screen.</p>
+        <p className="small muted"><strong>Android:</strong> open it in Chrome → ⋮ menu → Add to Home screen (or Install app).</p>
+        <p className="small faint">
+          It then opens full-screen like a native app and works offline. Your data lives inside that home-screen app,
+          separately from the browser — use the same one every day, and export a backup weekly.
+        </p>
       </section>
     </div>
   );

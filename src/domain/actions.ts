@@ -19,6 +19,10 @@ export function setTheme(state: AppState, theme: Theme): AppState {
   return { ...state, settings: { ...state.settings, theme } };
 }
 
+export function setName(state: AppState, name: string): AppState {
+  return { ...state, settings: { ...state.settings, name: name.trim().slice(0, 60) } };
+}
+
 // ---- Evidence ----
 
 export function addManualEvidence(

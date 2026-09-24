@@ -1,4 +1,4 @@
-import { LAST_AUTHORED_DAY, PHASES, getDay, phaseForDay } from "../content/curriculum";
+import { LAST_AUTHORED_DAY, PHASES, PILLARS, getDay, phaseForDay } from "../content/curriculum";
 import { useAppState } from "../app/context";
 import { href } from "../app/router";
 import { isClosed, sessionStatus } from "../domain/sessions";
@@ -9,10 +9,15 @@ export function RoadmapView() {
 
   return (
     <div className="stack">
-      <p className="muted small" style={{ margin: 0 }}>
-        The whole year, visible from Day 1. Days 1–{LAST_AUTHORED_DAY} are written. The rest are real slots waiting for
-        content — not placeholders pretending to be lessons.
+      <p className="muted" style={{ margin: 0 }}>
+        The whole year, visible from Day 1. Days 1–{LAST_AUTHORED_DAY} are written; each dot shows the day's pillar. The rest
+        are real slots waiting for content — not placeholders pretending to be lessons.
       </p>
+      <div className="legend" aria-label="Pillars">
+        {(["mind", "business", "build", "influence", "judgement", "field"] as const).map((pl) => (
+          <span key={pl} className="pillar-tag" data-pillar={pl} style={{ letterSpacing: ".04em" }}>{PILLARS[pl].name}</span>
+        ))}
+      </div>
       <div className="legend" aria-label="Legend">
         <span><i className="demonstrated" /> Demonstrated</span>
         <span><i className="consumed" /> Consumed</span>
@@ -36,7 +41,7 @@ export function RoadmapView() {
           const label = `Day ${d}${written ? ` — ${getDay(d)!.theme}` : " (not yet written)"}, ${status.replace("_", " ")}`;
           chips.push(
             written ? (
-              <a key={d} className={cls} href={href("session", d)} title={label} aria-label={label}>{d}</a>
+              <a key={d} className={cls} data-pillar={getDay(d)!.pillar} href={href("session", d)} title={label} aria-label={label}>{d}</a>
             ) : (
               <span key={d} className={cls} title={label} aria-label={label}>{d}</span>
             ),
@@ -47,8 +52,8 @@ export function RoadmapView() {
             <summary>
               <div className="between">
                 <div>
-                  <strong className="serif" style={{ fontSize: 17 }}>{p.name}</strong>{" "}
-                  <span className="faint small">· Phase {p.id}</span>
+                  <div className="eyebrow" style={{ marginBottom: 4 }}>Phase {p.id}</div>
+                  <h3>{p.name}</h3>
                 </div>
                 <span className="pill">Days {start}–{end}</span>
               </div>

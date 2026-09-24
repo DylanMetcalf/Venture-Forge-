@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { assessSkill } from "./actions";
-import { progressSummary, reviewEntries, skillStats, streak } from "./selectors";
+import { pillarStats, progressSummary, reviewEntries, skillStats, streak } from "./selectors";
 import { closeSession, commit, gradeCommitment, updateSession } from "./sessions";
 import { DomainError, defaultState, type AppState } from "./types";
 
@@ -79,5 +79,17 @@ describe("reviews", () => {
     s = closeDay(s, 14, at(21));
     s = closeDay(s, 8, at(22));
     expect(reviewEntries(s).map((r) => r.day)).toEqual([14, 7]);
+  });
+});
+
+describe("pillar stats", () => {
+  it("counts closed and demonstrated sessions per pillar", () => {
+    let s = closeDay(defaultState(), 1, at(20));
+    s = closeDay(s, 8, at(21), false);
+    s = closeDay(s, 3, at(22));
+    const p = pillarStats(s);
+    expect(p.mind).toMatchObject({ closed: 2, demonstrated: 1 });
+    expect(p.build).toMatchObject({ closed: 1, demonstrated: 1 });
+    expect(p.business).toMatchObject({ closed: 0, demonstrated: 0 });
   });
 });

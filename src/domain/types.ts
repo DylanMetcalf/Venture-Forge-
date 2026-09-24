@@ -93,7 +93,7 @@ export type FreedomIndex = Record<FreedomKey, number> & { updatedAt?: Timestamp 
 
 export interface AppState {
   schemaVersion: typeof SCHEMA_VERSION;
-  settings: { theme: Theme };
+  settings: { theme: Theme; /** Used for the greeting on Today. */ name: string };
   currentDay: number;
   /** Keyed by curriculum day number. */
   sessions: Record<number, SessionRecord>;
@@ -108,7 +108,7 @@ export interface AppState {
 export function defaultState(): AppState {
   return {
     schemaVersion: SCHEMA_VERSION,
-    settings: { theme: "system" },
+    settings: { theme: "system", name: "" },
     currentDay: 1,
     sessions: {},
     evidence: [],

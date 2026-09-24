@@ -17,7 +17,7 @@ export function SkillsView() {
   const row = (s: SkillStats) => (
     <div key={s.id}>
       <button className="skill-row" aria-expanded={open === s.id} onClick={() => setOpen(open === s.id ? null : s.id)}>
-        <span>{skillLabel(s.id)}</span>
+        <span className="skill-name">{skillLabel(s.id)}</span>
         <span className="row" style={{ gap: 10 }}>
           <span className="faint tiny">{SKILL_LEVELS[s.level]}</span>
           <span className="skill-bar" aria-hidden="true"><div style={{ width: `${(s.level / MAX_SKILL_LEVEL) * 100}%` }} /></span>
@@ -46,7 +46,7 @@ export function SkillsView() {
       {Object.entries(SKILL_CATEGORIES).map(([cat, ids]) => (
         <details key={cat} className="card">
           <summary>
-            <span>{cat}</span>
+            <span className="serif" style={{ fontSize: 17 }}>{cat}</span>
             <span className="faint tiny">{ids.filter((id) => (stats.get(id)?.evidence ?? 0) > 0).length}/{ids.length} with evidence</span>
           </summary>
           <div style={{ marginTop: 8 }}>{ids.map((id) => row(stats.get(id)!))}</div>

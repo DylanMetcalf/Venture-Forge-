@@ -4,6 +4,9 @@ import { App } from "./app/App";
 import { AppProvider } from "./app/context";
 import { LocalStorageRepository, MemoryRepository, type Repository } from "./storage/repository";
 import { createStore } from "./store/store";
+import "@fontsource-variable/fraunces/opsz.css";
+import "@fontsource-variable/fraunces/opsz-italic.css";
+import "@fontsource-variable/inter/index.css";
 import "./styles/app.css";
 
 function createRepository(): { repo: Repository; persistent: boolean } {
@@ -28,3 +31,10 @@ createRoot(document.getElementById("root")!).render(
     </AppProvider>
   </StrictMode>,
 );
+
+// Offline support for the installed (home-screen) app. Production builds only.
+if (import.meta.env.PROD && "serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch((e) => console.warn("Venture Forge: service worker failed", e));
+  });
+}

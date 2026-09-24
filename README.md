@@ -3,10 +3,40 @@
 A private training ground for becoming a capable founder.
 **Learn → Think → Apply → Build → Reflect → Prove → Improve.**
 
-Venture Forge runs a structured 365-day curriculum. Each day has an objective, a
-time estimate and a clear definition of done. It records real work as evidence,
-separates *consumed* days (read and reflected) from *demonstrated* ones (real
-work recorded), and links that work to your actual projects.
+Venture Forge runs a 365-day programme that trains five capabilities, interleaved
+through every week:
+
+| Pillar | Trains |
+| --- | --- |
+| **Mind** | Self-command: attention, composure, discipline |
+| **Business** | How money, value and companies actually work |
+| **Build** | AI and software: making real things that run |
+| **Influence** | Reading people and rooms; moving them honestly |
+| **Judgement** | Thinking clearly and deciding well |
+
+Weekly rhythm: Mind · Business · Build · Influence · Judgement · field mission · review.
+Each day has an objective, a time estimate and a definition of done. A day counts
+as *demonstrated* only when real work is recorded; otherwise it's *consumed*.
+
+**Live app:** https://dylanmetcalf.github.io/Venture-Forge-/ (after the one-time setup below).
+
+## Use it on your phone
+
+1. Open the live app link in **Safari** (iPhone) or **Chrome** (Android).
+2. iPhone: Share → **Add to Home Screen**. Android: ⋮ → **Add to Home screen / Install app**.
+3. Open it from the home-screen icon from then on. It runs full-screen and works offline.
+
+Data is stored on the device, inside that home-screen app. Export a backup from
+**Settings** weekly until sync exists.
+
+## Hosting (GitHub Pages, free)
+
+Every push to `main` runs `.github/workflows/deploy.yml`, which tests, builds and
+publishes the site. One-time setup in the GitHub repository:
+
+1. **Settings → General → Default branch** → switch to `main`.
+2. **Settings → Pages → Build and deployment → Source** → **GitHub Actions**.
+3. **Actions → Deploy to GitHub Pages → Run workflow** (or push to `main`).
 
 ## Run it
 
@@ -37,7 +67,7 @@ The build is a static site with relative asset paths, so any static host works
 
 ## Status
 
-- **Curriculum:** Days 1–30 are written (Phase 1, Month 1). Days 31–365 are
+- **Curriculum:** Days 1–30 are written (Foundation, Month 1). Days 31–365 are
   visible on the roadmap but deliberately not filled with placeholder content.
 - **Data:** stored in this browser only (`localStorage`). There's no account or
   sync yet, so **use Settings → Export backup regularly.**

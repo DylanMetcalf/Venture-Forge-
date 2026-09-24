@@ -25,3 +25,13 @@ once it needs editing at runtime (e.g. JARVIS-driven adaptation).
 ### 2026-09-24 — Added objective / minutes / doneWhen to every day
 The prototype's day schema lacked the brief's "Objective", "Estimated time" and "Completion criteria".
 All 30 days now have them. The original lesson text is unchanged.
+
+### 2026-09-24 — The programme trains the person, not specific ventures
+Days 1–30 originally assumed three specific ventures. The owner's goal is personal capability —
+business, AI/software development, psychological self-command and reading people — practised daily.
+The curriculum is now organised around five pillars (Mind, Business, Build, Influence, Judgement)
+interleaved every week, with field missions and reviews. Projects remain as an optional link.
+
+### 2026-09-24 — Host on GitHub Pages as an installable PWA; Supabase later
+Free static hosting from `main` via GitHub Actions, browser storage, and a manifest + service worker
+so it installs on a phone and opens offline. The `Repository` interface is where Supabase sync plugs in later.

@@ -1,9 +1,71 @@
-import { LAST_AUTHORED_DAY, PHASES, PILLARS, getDay, phaseForDay } from "../content/curriculum";
-import { useAppState } from "../app/context";
+import { useState } from "react";
+import { DAYS, LAST_AUTHORED_DAY, PHASES, PILLARS, getDay, phaseForDay } from "../content/curriculum";
+import { TRACKS } from "../content/tracks";
+import { Segmented } from "../components/ui";
+import { skillCapabilities } from "../domain/capability";
+import { useAppState, useToday } from "../app/context";
 import { href } from "../app/router";
 import { isClosed, sessionStatus } from "../domain/sessions";
 
 export function RoadmapView() {
+  const [tab, setTab] = useState<"year" | "tracks">("year");
+  return (
+    <div className="stack">
+      <Segmented label="Curriculum view" value={tab} onChange={setTab} options={[{ value: "year", label: "The year" }, { value: "tracks", label: "Tracks" }]} />
+      {tab === "year" ? <YearView /> : <TracksView />}
+    </div>
+  );
+}
+
+function TracksView() {
+  const state = useAppState();
+  const today = useToday();
+  const caps = skillCapabilities(state, today);
+  return (
+    <div className="stack">
+      <p className="muted" style={{ margin: 0 }}>
+        Twelve interconnected capability tracks. Sessions interleave them day by day; each module's progress comes from the
+        evidence recorded against its skills, and modules are revisited rather than ticked off.
+      </p>
+      {TRACKS.map((t) => (
+        <details key={t.id} className="card" data-pillar={t.pillar}>
+          <summary>
+            <span>
+              <span className="pillar-tag" style={{ letterSpacing: ".04em" }}>{PILLARS[t.pillar].name}</span>
+              <h3 className="serif" style={{ fontSize: 19, margin: "6px 0 2px" }}>{t.name}</h3>
+              <span className="muted small">{t.summary}</span>
+            </span>
+            <span className="chev" aria-hidden="true">⌄</span>
+          </summary>
+          <div style={{ marginTop: 12 }}>
+            {t.modules.map((mod) => {
+              const lv = mod.skills.map((s) => caps.get(s)?.level ?? 0);
+              const withEvidence = mod.skills.filter((s) => (caps.get(s)?.evidence ?? 0) > 0).length;
+              const sessions = DAYS.filter((d) => d.skills.some((s) => mod.skills.includes(s))).map((d) => d.day);
+              const state = Math.min(...lv) >= 2 ? "Functional" : withEvidence > 0 ? `Evidence in ${withEvidence}/${mod.skills.length} skills` : lv.some((l) => l > 0) ? "Practised" : "Not started";
+              return (
+                <div key={mod.id} className="module-row">
+                  <div>
+                    <div>{mod.title}</div>
+                    <div className="lvl">{mod.level}</div>
+                    {sessions.length > 0 && (
+                      <div className="faint tiny" style={{ marginTop: 3 }}>
+                        Sessions: {sessions.map((d) => <a key={d} href={href("session", d)} style={{ marginRight: 6 }}>{d}</a>)}
+                      </div>
+                    )}
+                  </div>
+                  <div className={`state ${withEvidence ? "on" : ""}`}>{state}</div>
+                </div>
+              );
+            })}
+          </div>
+        </details>
+      ))}
+    </div>
+  );
+}
+
+function YearView() {
   const state = useAppState();
   const currentPhase = phaseForDay(state.currentDay).id;
 

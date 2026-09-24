@@ -151,6 +151,7 @@ function SessionBody({ day, content }: { day: number; content: CurriculumDay }) 
 
         <TextArea label="What did you learn?" value={rec.reflection.learned ?? ""} onChange={(v) => save({ reflection: { learned: v } })} rows={3} />
         <TextArea label="What did you avoid?" value={rec.reflection.avoided ?? ""} onChange={(v) => save({ reflection: { avoided: v } })} rows={2} placeholder="Honest answers only. Blank is fine if nothing." />
+        <TextArea label="Improve: what changes tomorrow?" value={rec.reflection.improve ?? ""} onChange={(v) => save({ reflection: { improve: v } })} rows={2} />
 
         {state.projects.length > 0 && (
           <>

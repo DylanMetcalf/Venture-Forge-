@@ -75,3 +75,19 @@ export function formatDate(d: string | undefined): string {
   const [y, m, day] = d.slice(0, 10).split("-").map(Number) as [number, number, number];
   return new Date(y, m - 1, day).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
 }
+
+// ---- v3 shared components ----
+
+export function Segmented<T extends string>({ value, options, onChange, label }: { value: T; options: { value: T; label: string }[]; onChange: (v: T) => void; label: string }) {
+  return (
+    <div className="segmented" role="tablist" aria-label={label}>
+      {options.map((o) => (
+        <button key={o.value} role="tab" aria-selected={value === o.value} onClick={() => onChange(o.value)}>{o.label}</button>
+      ))}
+    </div>
+  );
+}
+
+export function BackLink({ href, children }: { href: string; children: ReactNode }) {
+  return <a className="back" href={href}>← {children}</a>;
+}

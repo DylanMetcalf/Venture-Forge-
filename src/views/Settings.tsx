@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 import { usePersistent, useAction, useAppState, useStore, useToast } from "../app/context";
-import { setName, setTheme } from "../domain/actions";
+import { setMentorModel, setName, setTheme } from "../domain/actions";
+import { EVOLUTION_LOG } from "../content/evolution";
+import { secrets } from "../storage/secrets";
 import type { Theme } from "../domain/types";
 import { backupFilename, exportBackup, parseBackup } from "../storage/backup";
 
@@ -18,6 +20,8 @@ export function SettingsView() {
   const persistent = usePersistent();
   const fileInput = useRef<HTMLInputElement>(null);
   const [name, setNameDraft] = useState(state.settings.name);
+  const [keyDraft, setKeyDraft] = useState("");
+  const [hasKey, setHasKey] = useState(() => !!secrets.getAnthropicKey());
 
   function download() {
     const now = new Date();
@@ -91,6 +95,30 @@ export function SettingsView() {
       </section>
 
       <section className="card">
+        <div className="eyebrow">AI mentor</div>
+        <p className="small muted">
+          The mentor uses Claude with your own Anthropic API key. The key is stored only on this device, separately from your
+          data, is never included in backups, and is sent only to api.anthropic.com. Usage is billed to your Anthropic account.
+        </p>
+        {hasKey ? (
+          <div className="row">
+            <span className="pill sage">Key saved on this device</span>
+            <button className="btn sm ghost" onClick={() => { secrets.setAnthropicKey(null); setHasKey(false); toast("Key removed."); }}>Remove key</button>
+          </div>
+        ) : (
+          <form className="row" style={{ flexWrap: "nowrap" }} onSubmit={(e) => { e.preventDefault(); secrets.setAnthropicKey(keyDraft); setKeyDraft(""); setHasKey(!!secrets.getAnthropicKey()); toast("Key saved on this device."); }}>
+            <input type="password" autoComplete="off" aria-label="Anthropic API key" placeholder="sk-ant-…" value={keyDraft} onChange={(e) => setKeyDraft(e.target.value)} />
+            <button className="btn sm primary" type="submit" disabled={!keyDraft.trim()}>Save</button>
+          </form>
+        )}
+        <label className="field-label" htmlFor="mentor-model">Model</label>
+        <select id="mentor-model" value={state.settings.mentorModel} onChange={(e) => run((s) => setMentorModel(s, e.target.value))}>
+          <option value="claude-opus-5">Claude Opus 5 — deepest reasoning (default)</option>
+          <option value="claude-sonnet-5">Claude Sonnet 5 — faster, lower cost</option>
+        </select>
+      </section>
+
+      <section className="card">
         <div className="eyebrow">Install on your phone</div>
         <p className="small muted"><strong>iPhone:</strong> open this page in Safari → Share → Add to Home Screen.</p>
         <p className="small muted"><strong>Android:</strong> open it in Chrome → ⋮ menu → Add to Home screen (or Install app).</p>
@@ -98,6 +126,19 @@ export function SettingsView() {
           It then opens full-screen like a native app and works offline. Your data lives inside that home-screen app,
           separately from the browser — use the same one every day, and export a backup weekly.
         </p>
+      </section>
+
+      <section className="card">
+        <div className="eyebrow">Evolution log</div>
+        <p className="small faint">Every structural change to Venture Forge is logged, tested, reversible and traceable.</p>
+        {EVOLUTION_LOG.map((ev) => (
+          <details key={ev.version} style={{ marginTop: 10 }}>
+            <summary className="small" style={{ cursor: "pointer" }}>
+              <strong>{ev.version}</strong> · {ev.summary} <span className="faint">· {ev.date} · {ev.author}</span>
+            </summary>
+            <ul className="small muted" style={{ margin: "6px 0 0", paddingLeft: 18 }}>{ev.changes.map((c) => <li key={c}>{c}</li>)}</ul>
+          </details>
+        ))}
       </section>
     </div>
   );

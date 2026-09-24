@@ -8,33 +8,38 @@ export interface NavItem {
 }
 
 export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
-  { title: "Train", items: [
-    { r: "today", label: "Today", desc: "What you're doing today." },
-    { r: "session", label: "Session", desc: "Today's session, start to close." },
-    { r: "roadmap", label: "Roadmap", desc: "The whole year, and where you are in it." },
-    { r: "skills", label: "Skills", desc: "Capability backed by evidence." },
+  { title: "Today", items: [
+    { r: "today", label: "Dashboard", desc: "Where you are and what matters today." },
+    { r: "checkin", label: "Check-in", desc: "Morning plan and evening review." },
+    { r: "session", label: "Session", desc: "Today's session: learn, think, apply, build, reflect." },
+    { r: "mentor", label: "Mentor", desc: "A demanding founder coach that knows your context." },
   ] },
-  { title: "Record", items: [
+  { title: "Work", items: [
+    { r: "projects", label: "Projects", desc: "Real work the learning applies to." },
+    { r: "experiments", label: "Experiments", desc: "Operate through evidence, not assumptions." },
+    { r: "opportunities", label: "Opportunity Vault", desc: "Ideas captured without chasing them." },
+    { r: "decisions", label: "Decisions", desc: "Record decisions; review outcomes later." },
+  ] },
+  { title: "Growth", items: [
+    { r: "skills", label: "Skills & Scorecard", desc: "Capability backed by evidence." },
     { r: "evidence", label: "Evidence", desc: "Everything you've actually proven." },
-    { r: "reviews", label: "Reviews", desc: "Every weekly and monthly review you've closed." },
-    { r: "decisions", label: "Decision Journal", desc: "Record real decisions; review outcomes later." },
-    { r: "ideas", label: "Idea Vault", desc: "Capture ideas without committing to them." },
-    { r: "projects", label: "Projects", desc: "Things you're building that sessions can feed into." },
+    { r: "reviews", label: "Reviews", desc: "Weekly review and next week's focus." },
+    { r: "roadmap", label: "Curriculum", desc: "The year, the tracks and where you are." },
   ] },
-  { title: "Reference", items: [
-    { r: "library", label: "Knowledge Library", desc: "Concepts, explained and applied." },
-    { r: "freedom", label: "Freedom Index", desc: "A self-rated check on what the work is for." },
-    { r: "settings", label: "Settings & Data", desc: "Your name, theme, backup and restore." },
+  { title: "Knowledge", items: [
+    { r: "memory", label: "Memory", desc: "Goals, lessons, patterns and context the system keeps." },
+    { r: "library", label: "Library", desc: "Concepts, explained and applied." },
+    { r: "settings", label: "Settings", desc: "Name, theme, mentor, backup and the evolution log." },
   ] },
 ];
 
 export const ALL_ITEMS = NAV_GROUPS.flatMap((g) => g.items);
 
+/** Mobile tab bar. The centre slot is the capture button (rendered separately). */
 export const TABS: { r: RouteName; label: string; icon: IconName }[] = [
   { r: "today", label: "Today", icon: "today" },
   { r: "session", label: "Session", icon: "session" },
-  { r: "roadmap", label: "Roadmap", icon: "roadmap" },
-  { r: "skills", label: "Skills", icon: "skills" },
+  { r: "mentor", label: "Mentor", icon: "mentor" },
   { r: "more", label: "More", icon: "more" },
 ];
 

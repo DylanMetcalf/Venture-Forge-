@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { CaptureSheet } from "../components/Capture";
 import { BrandMark, Icon } from "../components/Icon";
 import { ALL_ITEMS, MORE_ITEMS, NAV_GROUPS, TABS } from "./nav";
 import { useAppState, useStore } from "./context";
@@ -10,29 +11,37 @@ import { SkillsView } from "../views/Skills";
 import { ProjectsView } from "../views/Projects";
 import { EvidenceView } from "../views/Evidence";
 import { DecisionsView } from "../views/Decisions";
-import { IdeasView } from "../views/Ideas";
+import { CheckInView } from "../views/CheckIn";
+import { MentorView } from "../views/Mentor";
+import { ExperimentsView } from "../views/Experiments";
+import { OpportunitiesView } from "../views/Opportunities";
+import { MemoryView } from "../views/Memory";
 import { LibraryView } from "../views/Library";
 import { ReviewsView } from "../views/Reviews";
-import { FreedomView } from "../views/Freedom";
 import { SettingsView } from "../views/Settings";
 import { MoreView } from "../views/More";
 
 /** Views that draw their own header. Every other view gets a standard page title. */
-const OWN_HEADER: RouteName[] = ["today", "session"];
+const OWN_HEADER: RouteName[] = ["today", "session", "checkin", "mentor"];
+/** Routes whose detail pages (with a param) draw their own header. */
+const DETAIL_ROUTES: RouteName[] = ["projects", "experiments", "opportunities"];
 
 function View({ name, param }: { name: RouteName; param?: string }) {
   switch (name) {
     case "today": return <TodayView />;
+    case "checkin": return <CheckInView param={param} />;
     case "session": return <SessionView param={param} />;
-    case "roadmap": return <RoadmapView />;
-    case "skills": return <SkillsView />;
-    case "projects": return <ProjectsView />;
-    case "evidence": return <EvidenceView />;
+    case "mentor": return <MentorView />;
+    case "projects": return <ProjectsView param={param} />;
+    case "experiments": return <ExperimentsView param={param} />;
+    case "opportunities": return <OpportunitiesView param={param} />;
     case "decisions": return <DecisionsView />;
-    case "ideas": return <IdeasView />;
-    case "library": return <LibraryView param={param} />;
+    case "skills": return <SkillsView param={param} />;
+    case "evidence": return <EvidenceView />;
     case "reviews": return <ReviewsView />;
-    case "freedom": return <FreedomView />;
+    case "roadmap": return <RoadmapView />;
+    case "memory": return <MemoryView />;
+    case "library": return <LibraryView param={param} />;
     case "settings": return <SettingsView />;
     case "more": return <MoreView />;
   }
@@ -43,6 +52,7 @@ export function App() {
   const store = useStore();
   const route = useRoute();
   const theme = state.settings.theme;
+  const [capturing, setCapturing] = useState(false);
 
   useEffect(() => {
     if (theme === "system") document.documentElement.removeAttribute("data-theme");
@@ -71,6 +81,9 @@ export function App() {
             <div className="brand-sub">Day {state.currentDay} of 365</div>
           </div>
         </a>
+        <button className="btn sm rail-capture" onClick={() => setCapturing(true)}>
+          <span style={{ width: 16, height: 16, display: "inline-flex" }}><Icon name="plus" /></span> Capture
+        </button>
         {NAV_GROUPS.map((g) => (
           <div key={g.title}>
             <div className="rail-section">{g.title}</div>
@@ -87,7 +100,7 @@ export function App() {
       <div className="main">
         <main className={`content ${route.name === "roadmap" ? "wide" : ""}`} key={`${route.name}/${route.param ?? ""}`}>
           {saveError && <div className="banner" role="alert">{saveError}</div>}
-          {!OWN_HEADER.includes(route.name) && (
+          {!OWN_HEADER.includes(route.name) && !(DETAIL_ROUTES.includes(route.name) && route.param) && (
             <header className="page-head"><h1>{title}</h1></header>
           )}
           <View name={route.name} param={route.param} />
@@ -95,13 +108,23 @@ export function App() {
       </div>
 
       <nav className="tabbar" aria-label="Main">
-        {TABS.map((t) => (
+        {TABS.slice(0, 2).map((t) => (
+          <a key={t.r} className="tab-item" href={href(t.r)} aria-current={tabActive(t.r) ? "page" : undefined}>
+            <Icon name={t.icon} />
+            <span>{t.label}</span>
+          </a>
+        ))}
+        <div className="tab-capture">
+          <button onClick={() => setCapturing(true)} aria-label="Capture a thought"><Icon name="plus" /></button>
+        </div>
+        {TABS.slice(2).map((t) => (
           <a key={t.r} className="tab-item" href={href(t.r)} aria-current={tabActive(t.r) ? "page" : undefined}>
             <Icon name={t.icon} />
             <span>{t.label}</span>
           </a>
         ))}
       </nav>
+      {capturing && <CaptureSheet onClose={() => setCapturing(false)} />}
     </div>
   );
 }

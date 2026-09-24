@@ -4,13 +4,16 @@ const PATHS = {
   roadmap: "M4 6.5 9 4l6 2.5L20 4v13.5L15 20l-6-2.5L4 20zM9 4v13.5M15 6.5V20",
   skills: "M12 3 20 7.5v9L12 21 4 16.5v-9zM12 12l8-4.5M12 12v9M12 12 4 7.5",
   more: "M5 12h.01M12 12h.01M19 12h.01",
+  mentor: "M5 5h14v10H9l-4 4zM9 9.5h6M9 12h4",
+  plus: "M12 5v14M5 12h14",
+  mic: "M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3zM6 11a6 6 0 0 0 12 0M12 17v3",
 } as const;
 
 export type IconName = keyof typeof PATHS;
 
 export function Icon({ name }: { name: IconName }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={name === "more" ? 3 : 1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={name === "more" ? 3 : name === "plus" ? 2.2 : 1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d={PATHS[name]} />
     </svg>
   );

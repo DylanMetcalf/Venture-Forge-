@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAction, useAppState } from "../app/context";
 import { Empty, TextArea, TextInput, formatDate } from "../components/ui";
+import { ProjectSelect } from "../components/pickers";
 import { addDecision, reviewDecision } from "../domain/actions";
 import type { Decision } from "../domain/types";
 
@@ -32,16 +33,19 @@ function NewDecision({ onDone }: { onDone: () => void }) {
   const [context, setContext] = useState("");
   const [options, setOptions] = useState("");
   const [confidence, setConfidence] = useState(7);
+  const [projectId, setProjectId] = useState("");
+  const state = useAppState();
   return (
     <section className="card">
       <div className="eyebrow">Record a decision</div>
-      <TextInput label="The decision" value={decision} onChange={setDecision} placeholder="e.g. Raise Terram prices 8% from next month" />
+      <TextInput label="The decision" value={decision} onChange={setDecision} placeholder="e.g. Raise prices 8% from next month" />
       <TextArea label="Context" value={context} onChange={setContext} rows={2} />
       <TextArea label="Options considered" value={options} onChange={setOptions} rows={2} />
       <label className="field-label" htmlFor="conf">Confidence: {confidence}/10</label>
       <input id="conf" type="range" min={1} max={10} value={confidence} onChange={(e) => setConfidence(Number(e.target.value))} />
+      <ProjectSelect projects={state.projects} value={projectId} onChange={setProjectId} />
       <div className="row" style={{ marginTop: 12 }}>
-        <button className="btn primary" onClick={() => { if (run((s, now) => addDecision(s, { decision, context, options, confidence }, now), "Decision recorded.")) onDone(); }}>
+        <button className="btn primary" onClick={() => { if (run((s, now) => addDecision(s, { decision, context, options, confidence, projectId }, now), "Decision recorded.")) onDone(); }}>
           Save decision
         </button>
         <button className="btn ghost" onClick={onDone}>Cancel</button>

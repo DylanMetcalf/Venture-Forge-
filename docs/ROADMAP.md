@@ -13,20 +13,23 @@
 - Redesigned UI (Today morning page, editorial session), self-hosted fonts.
 - Installable PWA with offline support, deployed to GitHub Pages from `main`.
 
+## Done — Milestone 3: founder operating system MVP
+- Check-ins (adaptive evening), projects with milestones, experiments, opportunity vault, memory, weekly review.
+- Evidence-based skill levels, scorecard, 12-track curriculum architecture, adaptive recommendations with reasons.
+- AI mentor (Claude, own key), quick capture with dictation, Founder OS context-signal seam, evolution log.
+
 ## NOW
-- Use it daily for a week and note friction: that feedback drives the next design pass.
+- Use it daily for a week and note friction: that feedback drives the next pass.
 
 ## NEXT
 - Author Days 31–52 (rest of Foundation) in the same five-pillar rhythm; grow the library alongside.
-- Experiments: hypothesis → action → evidence → result → learning → next decision
-  (own entity, linked to projects and evidence).
-- Weekly review generated from the week's real data (sessions closed, promises kept, evidence, avoided items)
-  rather than only free text.
+- Mentor tools: let the mentor propose (not silently make) records — an experiment, a memory, a focus.
+- Pattern detection over time: recurring avoided topics across weeks, not just within one.
 - Browser smoke test (Playwright) in CI for the core loop.
 
 ## LATER
 - File/image evidence (needs server storage).
-- Adapting the curriculum based on recorded behaviour (skips, speed, avoided topics).
+- Reordering upcoming sessions from recorded behaviour (today the engine recommends; it doesn't reorder).
 - Founder OS integration API (read: progress summary; write: curriculum adjustments).
 
 ## Parking lot

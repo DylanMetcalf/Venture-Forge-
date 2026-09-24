@@ -18,6 +18,20 @@ Weekly rhythm: Mind · Business · Build · Influence · Judgement · field miss
 Each day has an objective, a time estimate and a definition of done. A day counts
 as *demonstrated* only when real work is recorded; otherwise it's *consumed*.
 
+## What's in it
+
+| Area | What it does |
+| --- | --- |
+| **Dashboard** | What matters today: your priorities, today's session, a short *Focus* list chosen by the adaptive engine (each item says why), what you're building, momentum, recent evidence. |
+| **Check-in** | Morning: plan, up to three priorities, what's hard, what to improve. Evening: questions that adapt to what actually happened. |
+| **Session** | Objective → Learn → Think → Apply → Build/Evidence → Reflect → Improve, with a morning promise. |
+| **Mentor** | A demanding, honest founder coach (Claude) that sees your check-in, projects, experiments, evidence, scorecard and memory. Uses your own API key. |
+| **Projects / Experiments / Opportunity Vault / Decisions** | Real work, hypothesis-driven tests (a concluded experiment becomes evidence), ideas captured without chasing them, and decisions reviewed against outcomes. |
+| **Skills & Scorecard** | 94 skills across 12 tracks. Levels (Developing → Highly capable) are derived from evidence, real-world evidence weighted; the scorecard shows facts, not one number. |
+| **Reviews** | Weekly review built from the week's real records, ending in next week's focus. |
+| **Memory** | Structured, searchable goals, context, preferences, lessons, patterns and commitments. |
+| **Capture** | One tap from anywhere (text or dictation) into today's plan, the vault, evidence or memory. |
+
 **Live app:** https://dylanmetcalf.github.io/Venture-Forge-/ (after the one-time setup below).
 
 ## Use it on your phone

@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Venture Forge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111319; --panel:#191c25; --panel2:#20232f; --raised:#262a38;
+  --border:#2b2f3d; --border-soft:#22242f;
+  --text:#ECE8DE; --text-dim:#A9ADBE; --text-faint:#6B7086;
+  --brass:#C6923F; --brass-soft:#7a6534;
+  --sage:#7FA087; --clay:#C4795A;
+  --font-serif:'Fraunces',ui-serif,Georgia,serif;
+  --font-sans:'Inter',ui-sans-serif,system-ui,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+:root:not([data-theme="light"]){ }
+:root[data-theme="light"]{
+  --ink:#F5F2EA; --panel:#FFFFFF; --panel2:#FBF9F3; --raised:#FFFFFF;
+  --border:#E4DFD0; --border-soft:#ECE7D9;
+  --text:#242116; --text-dim:#5B5748; --text-faint:#8B8672;
+  --brass:#9C6F26; --brass-soft:#C6923F;
+  --sage:#4F7A5B; --clay:#B05A38;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --ink:#F5F2EA; --panel:#FFFFFF; --panel2:#FBF9F3; --raised:#FFFFFF;
+    --border:#E4DFD0; --border-soft:#ECE7D9;
+    --text:#242116; --text-dim:#5B5748; --text-faint:#8B8672;
+    --brass:#9C6F26; --brass-soft:#C6923F;
+    --sage:#4F7A5B; --clay:#B05A38;
+  }
+}
+html{ scroll-padding-top:env(safe-area-inset-top,0px); height:100%; }
+*{ box-sizing:border-box; }
+body{
+  margin:0; background:var(--ink); color:var(--text);
+  font-family:var(--font-sans); font-size:15px; line-height:1.55;
+  min-height:100%; -webkit-font-smoothing:antialiased;
+}
+::selection{ background:var(--brass); color:#151515; }
+a{ color:inherit; }
+button{ font-family:inherit; }
+
+h1,h2,h3,.serif{ font-family:var(--font-serif); font-weight:600; letter-spacing:-0.01em; }
+
+.app{ display:flex; min-height:100vh; }
+
+/* ---- Sidebar (desktop) ---- */
+.rail{
+  width:230px; flex:none; border-right:1px solid var(--border-soft);
+  padding:24px 16px; display:flex; flex-direction:column; gap:4px;
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+}
+.rail-brand{ padding:4px 10px 20px; }
+.rail-brand .mark{ font-family:var(--font-serif); font-size:19px; font-weight:600; }
+.rail-brand .sub{ color:var(--text-faint); font-size:11.5px; margin-top:2px; }
+.rail-link{
+  display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:8px;
+  color:var(--text-dim); font-size:13.5px; cursor:pointer; text-decoration:none;
+  border:1px solid transparent;
+}
+.rail-link:hover{ background:var(--panel2); color:var(--text); }
+.rail-link.active{ background:var(--panel2); color:var(--text); border-color:var(--border); }
+.rail-link .dot{ width:6px; height:6px; border-radius:50%; background:var(--text-faint); flex:none; }
+.rail-link.active .dot{ background:var(--brass); }
+.rail-section{ margin-top:18px; padding:0 10px 6px; font-size:10.5px; letter-spacing:.04em; color:var(--text-faint); }
+.rail-foot{ margin-top:auto; padding:10px; font-size:11px; color:var(--text-faint); }
+
+/* ---- Main ---- */
+.main{ flex:1; min-width:0; }
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 24px; border-bottom:1px solid var(--border-soft);
+  position:sticky; top:0; background:rgba(17,19,25,.86); backdrop-filter:blur(10px);
+  z-index:5;
+}
+:root[data-theme="light"] .topbar{ background:rgba(245,242,234,.88); }
+.topbar h1{ font-size:16px; margin:0; }
+.topbar-actions{ display:flex; gap:8px; align-items:center; }
+.icon-btn{
+  width:32px; height:32px; border-radius:8px; border:1px solid var(--border);
+  background:var(--panel2); color:var(--text-dim); display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:14px;
+}
+.icon-btn:hover{ color:var(--text); }
+
+.content{ max-width:760px; margin:0 auto; padding:28px 20px 120px; }
+.content.wide{ max-width:980px; }
+
+/* ---- Cards & primitives ---- */
+.card{ background:var(--panel); border:1px solid var(--border-soft); border-radius:14px; padding:20px; }
+.card + .card{ margin-top:14px; }
+.eyebrow{ color:var(--text-faint); font-size:11.5px; letter-spacing:.02em; margin-bottom:6px; }
+.muted{ color:var(--text-dim); }
+.faint{ color:var(--text-faint); }
+.pill{
+  display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:999px;
+  font-size:11.5px; border:1px solid var(--border); color:var(--text-dim); background:var(--panel2);
+}
+.pill.brass{ color:var(--brass); border-color:var(--brass-soft); }
+.pill.sage{ color:var(--sage); border-color:var(--sage); }
+.pill.clay{ color:var(--clay); border-color:var(--clay); }
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:10px 16px; border-radius:9px; font-size:13.5px; font-weight:600;
+  border:1px solid var(--border); background:var(--panel2); color:var(--text); cursor:pointer;
+}
+.btn:hover{ border-color:var(--text-faint); }
+.btn.primary{ background:var(--brass); border-color:var(--brass); color:#171208; }
+.btn.primary:hover{ filter:brightness(1.06); }
+.btn.ghost{ background:transparent; }
+.btn.sm{ padding:7px 12px; font-size:12.5px; }
+.btn.danger{ color:var(--clay); }
+.btn:disabled{ opacity:.45; cursor:not-allowed; }
+
+textarea,input[type=text],input[type=number],input[type=date],select{
+  width:100%; background:var(--panel2); border:1px solid var(--border); color:var(--text);
+  border-radius:9px; padding:10px 12px; font-family:inherit; font-size:13.5px; resize:vertical;
+}
+textarea:focus,input:focus,select:focus{ outline:2px solid var(--brass); outline-offset:1px; border-color:var(--brass); }
+label.field-label{ display:block; font-size:12px; color:var(--text-dim); margin:12px 0 5px; }
+label.field-label:first-child{ margin-top:0; }
+
+hr.rule{ border:none; border-top:1px solid var(--border-soft); margin:16px 0; }
+
+/* ---- Bottom nav (mobile) ---- */
+.tabbar{
+  display:none; position:fixed; left:0; right:0; bottom:0; z-index:20;
+  background:var(--panel); border-top:1px solid var(--border-soft);
+  padding:8px 6px calc(8px + env(safe-area-inset-bottom,0px));
+  justify-content:space-around;
+}
+.tab-item{
+  display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 4px;
+  color:var(--text-faint); font-size:10.5px; cursor:pointer; flex:1; border:none; background:none;
+}
+.tab-item .ic{ font-size:18px; }
+.tab-item.active{ color:var(--brass); }
+
+@media (max-width:880px){
+  .rail{ display:none; }
+  .tabbar{ display:flex; }
+  .content{ padding-bottom:100px; }
+  .topbar{ padding:14px 16px; }
+}
+
+/* ---- Home ---- */
+.hero{
+  border-radius:16px; padding:24px; background:
+    radial-gradient(120% 140% at 100% 0%, rgba(198,146,63,.14), transparent 60%), var(--panel);
+  border:1px solid var(--border-soft);
+}
+.hero .daynum{ font-family:var(--font-serif); font-size:44px; line-height:1; margin:6px 0 2px; }
+.hero .phase{ color:var(--brass); font-size:13px; }
+.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.grid3{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+@media (max-width:600px){ .grid2,.grid3{ grid-template-columns:1fr 1fr; } }
+.stat{ background:var(--panel); border:1px solid var(--border-soft); border-radius:12px; padding:14px; }
+.stat .n{ font-family:var(--font-serif); font-size:22px; }
+.stat .l{ color:var(--text-faint); font-size:11.5px; margin-top:2px; }
+
+/* ---- Day view ---- */
+.mode-toggle{ display:flex; gap:6px; background:var(--panel2); border:1px solid var(--border); border-radius:10px; padding:3px; width:fit-content; }
+.mode-toggle button{ border:none; background:none; color:var(--text-faint); padding:7px 14px; border-radius:8px; font-size:12.5px; font-weight:600; cursor:pointer; }
+.mode-toggle button.active{ background:var(--raised); color:var(--text); }
+.day-block{ margin-top:18px; }
+.day-block .k{ font-size:11px; letter-spacing:.03em; color:var(--brass); margin-bottom:6px; }
+.day-block p{ margin:0 0 10px; white-space:pre-line; }
+.day-block textarea{ min-height:80px; }
+
+/* ---- Roadmap ---- */
+.phase-row{ padding:12px 14px; border:1px solid var(--border-soft); border-radius:12px; margin-bottom:8px; cursor:pointer; }
+.phase-row:hover{ border-color:var(--border); }
+.phase-row .top{ display:flex; justify-content:space-between; align-items:baseline; }
+.week-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-top:10px; }
+.day-chip{
+  aspect-ratio:1; border-radius:7px; display:flex; align-items:center; justify-content:center;
+  font-size:11px; border:1px solid var(--border-soft); color:var(--text-faint); cursor:pointer;
+}
+.day-chip.authored{ border-color:var(--border); color:var(--text-dim); }
+.day-chip.done{ background:var(--sage); color:#0d1a12; border-color:var(--sage); }
+.day-chip.today{ background:var(--brass); color:#171208; border-color:var(--brass); font-weight:700; }
+.day-chip.locked{ opacity:.35; }
+
+/* ---- Skills ---- */
+.skill-row{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border-soft); }
+.skill-row:last-child{ border-bottom:none; }
+.skill-name{ flex:1; font-size:13px; }
+.skill-bar{ width:110px; height:6px; border-radius:4px; background:var(--panel2); overflow:hidden; }
+.skill-bar > div{ height:100%; background:var(--brass); }
+.skill-lvl{ font-size:11px; color:var(--text-faint); width:78px; text-align:right; }
+
+/* ---- Lists / empty ---- */
+.empty{ padding:28px 16px; text-align:center; color:var(--text-faint); border:1px dashed var(--border); border-radius:12px; }
+.item-row{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; padding:12px 0; border-bottom:1px solid var(--border-soft); }
+.item-row:last-child{ border-bottom:none; }
+
+/* ---- Knowledge library ---- */
+.lib-card summary{ cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center; }
+.lib-card summary::-webkit-details-marker{ display:none; }
+.lib-card .body{ margin-top:12px; }
+.lib-card .body h4{ font-size:11.5px; color:var(--brass); margin:12px 0 4px; font-weight:600; }
+.lib-card .body h4:first-child{ margin-top:0; }
+
+/* freedom sliders */
+.f-row{ margin-bottom:16px; }
+.f-row .fl{ display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:6px; }
+input[type=range]{ width:100%; accent-color:var(--brass); }
+
+.toast{
+  position:fixed; bottom:90px; left:50%; transform:translateX(-50%); background:var(--raised);
+  border:1px solid var(--border); color:var(--text); padding:10px 16px; border-radius:10px;
+  font-size:12.5px; z-index:50; opacity:0; pointer-events:none; transition:opacity .2s, transform .2s;
+}
+.toast.show{ opacity:1; transform:translateX(-50%) translateY(-6px); }
+@media (min-width:881px){ .toast{ bottom:24px; } }
+</style>
+</head>
+<body>
+<div id="app" class="app"></div>
+<div id="toast" class="toast"></div>
+
+<script>
+// ============================================================
+// FOUNDER'S UNIVERSITY — CURRICULUM DATA
+// This file is the single source of truth for content.
+// The UI renders this data; it never hard-codes lesson text.
+// ============================================================
+
+const PHASES = [
+  { id: 1, code: "P1", name: "Foundation", range: [1, 52],
+    focus: "Personal responsibility, attention, discipline, self-management, business fundamentals, money, cash flow, basic finance, decision-making, thinking clearly, understanding value, understanding markets.",
+    stage: "OPERATOR" },
+  { id: 2, code: "P2", name: "Commercial Capability", range: [53, 104],
+    focus: "Sales, customer psychology, marketing, positioning, pricing, negotiation, offers, customer discovery, market research, communication, persuasion, distribution.",
+    stage: "OPERATOR" },
+  { id: 3, code: "P3", name: "Builder", range: [105, 156],
+    focus: "Product thinking, problem discovery, software, AI, automation, UX, MVPs, prototyping, testing, data, digital products, technical literacy.",
+    stage: "BUILDER" },
+  { id: 4, code: "P4", name: "Operator", range: [157, 208],
+    focus: "Operations, systems, SOPs, KPIs, project management, quality control, documentation, automation, delegation, process design, hiring fundamentals, infrastructure.",
+    stage: "SYSTEMS THINKER" },
+  { id: 5, code: "P5", name: "Leader", range: [209, 260],
+    focus: "Leadership, communication, management, feedback, conflict, hiring, culture, influence, negotiation, strategic communication, relationship building, networking.",
+    stage: "LEADER" },
+  { id: 6, code: "P6", name: "Owner", range: [261, 312],
+    focus: "Ownership, recurring revenue, business models, unit economics, capital allocation, investment fundamentals, valuation, risk, governance, acquisitions, portfolio thinking, founder independence.",
+    stage: "OWNER" },
+  { id: 7, code: "P7", name: "Integration", range: [313, 365],
+    focus: "Strategy, complex decisions, business building, capital allocation, leadership, systems, product, sales, technology, ownership, personal freedom, life design.",
+    stage: "INVESTOR" },
+];
+
+function phaseForDay(day) {
+  return PHASES.find(p => day >= p.range[0] && day <= p.range[1]) || PHASES[PHASES.length - 1];
+}
+function weekForDay(day) { return Math.ceil(day / 7); }
+function monthForDay(day) { return Math.ceil(day / 30.4); }
+
+// Skill taxonomy: category -> [skill ids]
+const SKILL_CATEGORIES = {
+  "Business": ["business-models", "economics", "markets", "strategy", "positioning", "pricing", "competitive-analysis", "customer-research"],
+  "Sales": ["prospecting", "discovery", "questioning", "objections", "negotiation", "closing", "follow-up", "relationship-selling"],
+  "Marketing": ["messaging", "copywriting", "content", "distribution", "acquisition", "retention", "brand"],
+  "Finance": ["revenue", "costs", "gross-margin", "cash-flow", "pnl", "budgeting", "unit-economics", "forecasting", "valuation", "capital-allocation"],
+  "Operations": ["sops", "kpis", "process-design", "project-management", "documentation", "quality", "delegation", "automation"],
+  "Technology": ["ai", "software", "apis", "databases", "ux", "architecture", "data", "cybersecurity", "cloud"],
+  "Product": ["problem-discovery", "customer-interviews", "mvps", "experimentation", "product-market-fit", "prioritization"],
+  "Leadership": ["communication", "hiring", "management", "feedback", "conflict", "accountability", "culture"],
+  "Thinking": ["first-principles", "systems-thinking", "critical-thinking", "probability", "decision-theory", "mental-models", "second-order-effects"],
+  "Human Behavior": ["psychology", "behavioral-economics", "incentives", "cognitive-biases", "persuasion", "social-dynamics"],
+  "Personal Capability": ["discipline", "focus", "consistency", "resilience", "self-awareness", "courage", "responsibility", "delayed-gratification"],
+  "Network": ["networking", "relationships", "mentors", "partnerships", "reputation"],
+  "Ownership": ["recurring-revenue", "business-structures", "governance", "capital", "portfolio-thinking", "risk-management", "owner-independence"],
+};
+const SKILL_LEVELS = ["Unknown", "Aware", "Learning", "Practicing", "Competent", "Reliable", "Advanced", "Can Teach", "Can Systemize"];
+
+const FORMATS = {
+  lesson: "Lesson", case_study: "Case Study", scenario: "Scenario", simulation: "Simulation",
+  financial_exercise: "Financial Exercise", sales_challenge: "Sales Challenge", roleplay: "Roleplay",
+  writing_exercise: "Writing Exercise", technical_challenge: "Technical Challenge", research: "Research",
+  field_mission: "Field Mission", decision_exercise: "Decision Exercise", reflection: "Reflection",
+  teardown: "Teardown", weekly_review: "Founder Review", monthly_review: "Monthly Capability Review",
+};
+
+// ============================================================
+// DAYS 1–30 — fully authored. Phase 1: Foundation, Weeks 1–4 + capstone.
+// Everything past Day 30 is intentionally NOT authored yet (see app.js
+// "unauthored" state) rather than filled with placeholder content —
+// generating the remaining 335 days with real care happens in later passes.
+// ============================================================
+
+const DAYS = [
+{ day:1, format:"lesson", theme:"The Operator's Contract",
+  why:"Every system in this university assumes one thing: that you'll actually do what you say you'll do. Before strategy, before skills, this is the foundation everything else sits on.",
+  learn:"There are two kinds of people in any business: those whose actions are downstream of their circumstances, and those whose actions are upstream of their circumstances. The first group explains their results by pointing outward — the market, the client, the economy, the weather. The second group treats almost everything as something they could have influenced, prepared for, or responded to differently.\n\nThis isn't about blame. It's about where you put your attention. If a problem is 'not my fault,' your brain stops looking for what you could do about it. If you instead ask 'what's my move here, given this is now my problem,' you keep a door open that self-pity closes.\n\nThis university will track your actions, not your intentions. Evidence, not vibes. That starts today.",
+  think:"Think of a setback from the last few months — in the farm, the marketing business, or the butchery plans. Where did you put the explanation: on circumstances, or on your own next move?",
+  act:"Write down one thing currently going wrong or stuck in one of your ventures. Reframe it as a question that starts with 'What's my move here...' instead of 'Why is this happening to me.'",
+  build:null,
+  skills:["responsibility","self-awareness"], resource:null },
+
+{ day:2, format:"decision_exercise", theme:"The Attention Audit",
+  why:"You can't manage what you don't measure, and attention is the resource every other resource depends on. Before you optimize a business, optimize where your hours actually go.",
+  learn:"Most founders believe they know how they spend their time. Almost none of them are right within 30%. The gap between believed time-use and actual time-use is where 'I'm just so busy' and 'nothing's moving' coexist.\n\nThere are three categories worth separating: Founder Hours (only you can do this — vision, key relationships, hard decisions), Operator Hours (running what exists — content shooting, client calls, admin), and Recoverable Hours (things that could be delegated, automated, or dropped entirely, and currently aren't).\n\nToday isn't about fixing anything. It's about seeing clearly, which is a prerequisite for every decision later in this program.",
+  think:"Guess, before you check anything: what percentage of your working week is Founder Hours vs Operator Hours vs Recoverable Hours?",
+  act:"Pull up your calendar or just recall yesterday and today hour by hour. Log each block as Founder / Operator / Recoverable. Compare it to your guess.",
+  build:null,
+  skills:["self-awareness","focus"], resource:null },
+
+{ day:3, format:"case_study", theme:"Why Businesses Actually Die",
+  why:"You're about to run three ventures at once — content, marketing services, and a butchery. It's worth knowing, before you're in the middle of it, what actually kills small operator-led businesses.",
+  learn:"Composite case, drawn from patterns common across small owner-operated businesses (not any single real company): A founder runs a service business solo. Revenue looks healthy — client work is steady, invoices go out. But the founder is the only person who can deliver the work, chase the next client, and do the admin. When a big client project lands, marketing stops. When marketing stops, the pipeline dries up two months later. When the pipeline dries up, the founder panics, oversells, takes on too much again, and the cycle repeats — each time a little more exhausted.\n\nThe business didn't fail because the work was bad. It failed because it had no separation between the founder's time and the business's output. Every input depended on one finite person, with no system underneath.\n\nThis pattern — founder-dependency — is the single most common reason capable, hardworking people build businesses that quietly cap out or collapse. It's not a skills problem. It's a structure problem. Phase 4 of this program (Operator) is built specifically to address it — today is just about recognizing the pattern.",
+  think:"Of your three ventures, which one currently depends most completely on you personally, with the least written-down process behind it?",
+  act:"For that one venture, list three tasks only you currently know how to do that a documented process could eventually cover.",
+  build:null,
+  skills:["systems-thinking","business-models"], resource:{type:"book", title:"The E-Myth Revisited", author:"Michael Gerber", note:"On why the technician who starts a business isn't automatically equipped to run one."} },
+
+{ day:4, format:"writing_exercise", theme:"Define Your Standards",
+  why:"Discipline is easier to sustain when it's anchored to a standard you set once, rather than a motivation you have to regenerate every morning.",
+  learn:"Motivation is a mood. Standards are a decision. 'I feel like training today' is motivation. 'I train on Mon/Wed/Fri regardless of mood' is a standard. Standards survive bad days; motivation doesn't.\n\nMost people never actually write their standards down — they float as vague intentions, which makes them easy to quietly abandon. A written standard is something you can be honest with yourself about breaking, which is the first ingredient of self-trust (see the Personal Flywheel this program runs on: Promise → Action → Evidence → Self-Trust → Capability).",
+  think:"Where in your work do you currently operate on motivation rather than a standard — something you only do when you feel like it?",
+  act:"Write three personal standards for the next 90 days — specific, checkable, not aspirational fluff. Example format: 'I respond to client messages within 24 hours' rather than 'I'm responsive.'",
+  build:"Save your three standards somewhere you'll actually see them again — this program will ask you to grade yourself against them at the Week 4 and Month 1 reviews.",
+  skills:["discipline","self-awareness"], resource:null },
+
+{ day:5, format:"financial_exercise", theme:"Your Personal Cash Flow Snapshot",
+  why:"You can't reason well about business cash flow if you've never mapped your own. This is the smallest possible version of a skill you'll use at every scale later.",
+  learn:"Cash flow is not the same as income, and income is not the same as wealth. Cash flow is simply: what came in, minus what went out, in a given period. It says nothing about whether you're 'doing well' — a month with a big one-off client payment can look like a great cash flow month and hide a business that's structurally shrinking.\n\nThe reason founders track cash flow separately from profit is timing. You can be profitable on paper (revenue exceeds costs) and still run out of cash, if the money hasn't arrived yet when a bill is due. This single misunderstanding bankrupts profitable companies — you'll see it as a case study in Week 4.",
+  think:"Without checking anything: do you know, right now, roughly what your personal cash flow looked like last month?",
+  act:"Build the smallest possible version: list every source of money in for the last 30 days, and every category of money out. Subtract. That's your number.",
+  build:"Keep this snapshot — you'll build a business-level version of it in Week 4.",
+  skills:["cash-flow","budgeting"], resource:null },
+
+{ day:6, format:"field_mission", theme:"Track Every Rand for 24 Hours",
+  why:"An estimate is not evidence. This mission converts yesterday's exercise from a guess into a fact for one full day.",
+  learn:"There's a specific reason this is a 24-hour mission and not a 'try to be mindful of spending' suggestion: vague intentions produce vague data. A hard constraint — write down every single transaction today, no matter how small — produces something you can actually learn from.\n\nMost people discover one of two things doing this: either spending is concentrated in one or two categories they'd underestimated, or it's spread so thin across small transactions that no single one felt worth questioning, but the total does. Either finding is useful. You won't know which applies to you until you do it.",
+  think:null,
+  act:"For the next 24 hours, write down every rand that moves — in or out, business or personal, however small. Use your phone notes if that's fastest.",
+  build:"Tomorrow, at the Week 1 review, you'll total it and compare it to Day 5's estimate.",
+  skills:["cash-flow","self-awareness"], resource:null },
+
+{ day:7, format:"weekly_review", theme:"Week 1 Founder Review",
+  why:"Every seven days, this program stops moving forward and looks back. Progress you don't review doesn't compound — it just accumulates.",
+  learn:"This is the first of 52 weekly reviews. The format stays consistent all year so it becomes a habit rather than a chore: what happened, what you learned, what you avoided, what you proved, what's still hard, and what matters next week.\n\nBe specific. 'I did okay this week' is not a review — it produces no evidence and teaches you nothing next time you're deciding whether to trust yourself.",
+  think:"Total yesterday's 24-hour tracking. How far off was Day 5's estimate?",
+  act:"Answer, in writing: What did I accomplish? What did I avoid? What did I prove about myself with actual evidence? What should I stop, continue, or start next week?",
+  build:null,
+  skills:["reflection","self-awareness"], resource:null },
+
+{ day:8, format:"lesson", theme:"Discipline vs Motivation",
+  why:"You will not feel like doing most of what this program asks, most of the time. That's expected, not a sign something's wrong.",
+  learn:"Discipline is frequently described as if it's a personality trait some people have and others don't. It's more useful to treat it as a design problem: discipline is what happens when the cost of starting a good action is lower than the cost of not starting it.\n\nThree levers actually move this: reducing friction on the action you want (lay out the camera gear the night before a shoot), increasing friction on the action you don't want (log out of distracting apps), and shrinking the unit of commitment ('open the laptop' is easier to start than 'write the proposal'). People who look highly disciplined from the outside have usually just engineered their environment well — it's rarely raw willpower sustained for years.",
+  think:"Pick one recurring task you avoid. What's the actual friction — not the excuse, the mechanical friction — that makes starting it harder than it needs to be?",
+  act:"Change one piece of friction today: either make the good action easier to start, or make the avoidance easier to resist.",
+  build:null,
+  skills:["discipline","focus"], resource:null },
+
+{ day:9, format:"decision_exercise", theme:"Reversible vs Irreversible Decisions",
+  why:"Perfectionism usually comes from treating every decision as if it's permanent. Most aren't. Knowing the difference is one of the fastest ways to move faster without becoming reckless.",
+  learn:"Jeff Bezos popularized a useful frame: Type 1 decisions are one-way doors — hard or impossible to reverse (firing a key person, signing a long lease, publicly committing to a price). Type 2 decisions are two-way doors — you can walk back through if it doesn't work (trying a new content format, testing a price on one product, a week-long experiment).\n\nMost founders slow down Type 2 decisions as if they were Type 1 — researching, planning, and re-planning a decision that costs almost nothing to reverse. The fix isn't 'be reckless.' It's matching your deliberation speed to the actual cost of being wrong.",
+  think:"Think of a decision you're currently sitting on. Genuinely: is it a one-way door or a two-way door?",
+  act:"If it's a two-way door, make the call today — pick a default and move, with a specific date to review the outcome.",
+  build:null,
+  skills:["decision-theory","responsibility"], resource:null },
+
+{ day:10, format:"scenario", theme:"The Distraction Test",
+  why:"A scenario is a low-stakes place to rehearse a decision before real stakes force it on you.",
+  learn:"Scenario: It's 2pm. You have three hours of clear, uninterrupted time — rare for you. Your phone buzzes with a low-priority client message. Ten minutes later, a genuinely interesting content idea occurs to you, unrelated to what you're working on. Twenty minutes after that, you notice you're hungry and the kitchen has nothing prepared.\n\nEach of these is individually reasonable to attend to. None of them is urgent. Stacked together, they can quietly consume the three hours you had.",
+  think:"Which of the three pulls above would actually get you today — be honest, not aspirational?",
+  act:"Write your rule for handling it before it happens: what exactly do you do with a non-urgent interruption during protected focus time? (E.g., a running notes list you dump ideas into without acting on them until the block ends.)",
+  build:null,
+  skills:["focus","self-awareness"], resource:null },
+
+{ day:11, format:"technical_challenge", theme:"First Principles, Applied",
+  why:"Reasoning by analogy ('this is like that other thing') is fast but shallow. First-principles reasoning is slower but finds options analogy can't see.",
+  learn:"Reasoning by analogy asks: what has worked before, that resembles this? Reasoning by first principles asks: what's actually, fundamentally true here, independent of precedent — and what follows from that?\n\nExample: 'Butcheries need a shopfront' is analogy — it's how butcheries have usually worked. First principles asks what a butchery fundamentally needs to do: source quality meat, process it, and get it to a paying customer who trusts the quality. A shopfront is one solution to that, not the definition of the business. Farm-direct sales, subscription boxes, and B2B supply to restaurants are other solutions to the same underlying requirement — visible once you strip away 'how it's usually done.'",
+  think:"Pick one assumption you're currently carrying into the butchery or the marketing business, purely because 'that's how it's done.'",
+  act:"Break it down to first principles: what is the actual underlying need? List two alternative ways to meet that need you hadn't seriously considered.",
+  build:null,
+  skills:["first-principles","critical-thinking"], resource:null },
+
+{ day:12, format:"roleplay", theme:"The Self-Talk Audit",
+  why:"How you narrate setbacks to yourself, privately, shapes what you do next more than the setback itself does.",
+  learn:"There's a difference between an explanation that's accurate and one that's just familiar. 'I always do this' and 'I'm bad at follow-through' feel true because they're well-rehearsed, not because they're the most accurate available explanation for a specific event.\n\nA useful discipline: when you catch a harsh, global self-judgment ('I always,' 'I never,' 'I'm just not a...') stop and ask for the specific, local version instead. Not 'I'm bad at consistency' — but 'I missed the Tuesday shoot because I didn't prep the gear Monday night.' The specific version points at something you can actually fix. The global version just hurts.",
+  think:"Recall the last time you missed something you'd committed to. What was your private narration afterward — specific, or global and harsh?",
+  act:"Rewrite that narration in the specific, local form. Notice whether it points at a fixable cause.",
+  build:null,
+  skills:["self-awareness","resilience"], resource:null },
+
+{ day:13, format:"field_mission", theme:"One Uncomfortable Action",
+  why:"Courage is built the same way any capability is built — by doing the specific rep, not by feeling ready first.",
+  learn:"This program will regularly ask you to do something that produces a small, specific discomfort: a call you're avoiding, a message you're putting off, a price you're scared to say out loud. The discomfort is the point, not a side effect — avoidance compounds the same way progress does, just in the wrong direction.\n\nThe standard is small and concrete: not 'be braver' in general, but one identifiable action, today, that you've been putting off specifically because it's uncomfortable rather than because it's genuinely low priority.",
+  think:null,
+  act:"Identify one specific thing you've been avoiding because it's uncomfortable — a call, a message, an ask, a correction you need to make. Do it today.",
+  build:"Log what you did and what actually happened (usually less bad than the anticipation) as evidence.",
+  skills:["courage","responsibility"], resource:null },
+
+{ day:14, format:"weekly_review", theme:"Week 2 Founder Review",
+  why:"Second review. The point of repetition is that the format disappears and the honesty gets easier.",
+  learn:null,
+  think:"Look back at the three standards you wrote on Day 4. Graded honestly, how did you do against them this week?",
+  act:"Answer: What did I accomplish? What did I learn? What did I avoid? What evidence did I create? What should change next week?",
+  build:null,
+  skills:["reflection","discipline"], resource:null },
+
+{ day:15, format:"lesson", theme:"What a Business Actually Is",
+  why:"Before pricing, marketing, or systems — a plain, unglamorous definition of the thing you're building three of.",
+  learn:"A business is a repeatable way of creating value for someone else, in exchange for more value (usually money) than it cost you to create it. Every clause in that sentence matters. 'Repeatable' rules out one-off favors. 'For someone else' rules out things only you value. 'More than it cost' is the difference between a business and an expensive hobby.\n\nValue, specifically, means solving a real problem, removing real friction, or providing something someone genuinely wants — not what you find interesting to make. This sounds obvious stated plainly, and it's routinely lost in the excitement of building something. Every venture you run should survive being restated this way: who, specifically, has their problem solved, and why does the exchange work in your favor too?",
+  think:"State each of your three ventures — content, marketing services, butchery — in exactly this form: 'I solve ___ for ___, in exchange for ___, and it costs me less than that to deliver.'",
+  act:"Write all three. Flag any that feel forced or vague when you try.",
+  build:null,
+  skills:["business-models","positioning"], resource:null },
+
+{ day:16, format:"case_study", theme:"Value vs Price",
+  why:"These get confused constantly, and the confusion causes both underpricing and lost sales.",
+  learn:"Composite case: Two furniture makers sell nearly identical wooden tables. One prices by cost-plus — materials and hours, plus a margin. The other prices by the value the table creates for a specific buyer — a restaurant that needs twelve matching tables fast, with reliability, where a delay costs them opening week revenue. The second maker charges 40% more, to the same skill level of buyer, because the price is tied to what the outcome is worth to the customer, not to what the product cost to make.\n\nPrice tied only to cost caps your income at 'materials plus reasonable margin,' forever. Price tied to value can be genuinely higher — but only if you understand, specifically, what the customer is actually buying (speed, certainty, status, time saved, risk removed) beyond the physical thing.",
+  think:"For the butchery specifically: what is a customer actually buying beyond the meat itself — freshness, farm provenance, trust, convenience, something else?",
+  act:"Write down the value driver you believe matters most to your target butchery customer. You'll test this against a real customer in a few days.",
+  build:null,
+  skills:["pricing","positioning"], resource:null },
+
+{ day:17, format:"research", theme:"Map Three Businesses You Use",
+  why:"Value propositions are easier to see in businesses you're not emotionally attached to. Practice there first.",
+  learn:"Every business you interact with regularly has made an implicit bet about what you value. A cheap takeaway spot has bet on speed and price over ambience. A butchery with a strong local reputation has bet on trust and quality over price. Reverse-engineering these bets, in businesses that aren't yours, trains the same muscle you'll need for your own — without the emotional stakes clouding your judgment.",
+  think:null,
+  act:"Pick three businesses you personally buy from regularly. For each, write one sentence: what do you think they've bet you value most, and what's the evidence in how they operate?",
+  build:null,
+  skills:["positioning","customer-research"], resource:null },
+
+{ day:18, format:"writing_exercise", theme:"Your Value Proposition, Stated Plainly",
+  why:"If you can't say it in one clear sentence, you don't have a value proposition yet — you have a vague sense of one.",
+  learn:"A strong value proposition names a specific customer, a specific problem, and a specific reason your way of solving it beats the alternatives they'd otherwise use — including doing nothing. It resists the urge to describe everything you do; it names the sharpest true thing.\n\nWeak: 'We provide quality content marketing services.' Stronger: 'For small Highveld tourism businesses who post inconsistently and know it's costing them bookings, we build and run a content calendar that keeps their socials active without them touching a camera.'",
+  think:null,
+  act:"Write one value-proposition sentence for the marketing business and one for the butchery, in the sharper form above.",
+  build:"Save these — you'll pressure-test them against a real prospective customer on Day 20.",
+  skills:["positioning","copywriting"], resource:null },
+
+{ day:19, format:"scenario", theme:"The Customer Who Won't Pay Full Price",
+  why:"This exact conversation will happen to you repeatedly. Rehearsing it once, calmly, beats improvising it for the first time under pressure.",
+  learn:"Scenario: A prospective client for your marketing services says your quote is more than they expected, and asks if you can 'do something smaller for less.' There are three common responses: cave on price and keep the scope (margin erodes, resentment builds), refuse to move at all (you may lose a workable relationship over pride), or hold price and shrink scope to match what they're actually willing to pay for (the professional move).\n\nThe third option protects the value of your time while still meeting the customer somewhere real. It requires you to already know, before the conversation, what a smaller version of your offer actually looks like — you can't improvise it gracefully in the moment.",
+  think:"What would a genuinely smaller, still-profitable version of your marketing offer look like, if you had to have this conversation tomorrow?",
+  act:"Write the smaller-scope version down, with its price, so it exists before you need it.",
+  build:null,
+  skills:["negotiation","pricing"], resource:null },
+
+{ day:20, format:"field_mission", theme:"Ask a Real Customer What They'd Pay",
+  why:"Everything so far this week has been reasoning in your head. Today it meets a real person.",
+  learn:"Founders routinely avoid this exact conversation because an honest answer might be disappointing. That avoidance is expensive — it's cheaper to find out now, from one real conversation, than to find out in three months from silence in the market.\n\nKeep it simple and honest: describe what you're offering (butchery or marketing services) to someone who fits your target customer, and ask directly what they'd expect to pay, and why. Don't pitch. Listen.",
+  think:null,
+  act:"Have this conversation today, in person or by message, with one real prospective customer. Write down exactly what they said — not your interpretation of it.",
+  build:"This is your first customer-discovery evidence. File it — Phase 2 builds directly on this skill.",
+  skills:["customer-research","discovery"], resource:null },
+
+{ day:21, format:"weekly_review", theme:"Week 3 Founder Review",
+  why:"Three weeks of evidence is starting to be a pattern, not a coincidence.",
+  learn:null,
+  think:"What did Day 20's real conversation tell you that your Day 16–18 reasoning got right, or wrong?",
+  act:"Answer: What did I accomplish? What did I prove with evidence rather than assumption? What's still just a guess I haven't tested? What matters next week?",
+  build:null,
+  skills:["reflection","customer-research"], resource:null },
+
+{ day:22, format:"lesson", theme:"Revenue, Profit, and Cash Are Three Different Numbers",
+  why:"This confusion, left uncorrected, is one of the most common reasons capable operators run into trouble they didn't see coming.",
+  learn:"Revenue is everything you're owed for what you sold, in a period — it can include money you haven't actually received yet. Profit is revenue minus every cost of running the business, including the ones that don't feel like 'real' costs (your own time, wear on equipment, slow-moving stock). Cash is what's physically available to spend, right now, regardless of what's owed to you or what you technically earned on paper.\n\nA business can be growing revenue, be profitable on paper, and still run out of cash — if customers pay slowly, if stock ties up money before it sells, or if a big cost hits before the matching revenue arrives. This is precisely the failure mode in tomorrow's case study.",
+  think:"For the butchery specifically, where's the biggest gap likely to be between when you pay for stock and when you're paid by customers?",
+  act:"Write the answer in one sentence, even as a rough estimate.",
+  build:null,
+  skills:["revenue","cash-flow","pnl"], resource:null },
+
+{ day:23, format:"financial_exercise", theme:"Build a Simple P&L",
+  why:"You reasoned about this in the abstract yesterday. Today you build the real number for one of your ventures.",
+  learn:"A profit and loss statement (P&L), stripped to its essentials, is: Revenue, minus Cost of Goods Sold (what it directly costs to produce what you sold), equals Gross Profit. Then minus Operating Expenses (everything else it costs to run the business — rent, tools, subscriptions, your own reasonable salary), equals Net Profit.\n\nYou don't need software for a first pass. A page with those five lines, filled in with real or best-estimate numbers, is more useful than a polished spreadsheet you never build because it felt too early to start.",
+  think:null,
+  act:"Build a simple P&L for one of your ventures — pick the one with the most real numbers available. Five lines: Revenue, COGS, Gross Profit, OpEx, Net Profit.",
+  build:"Keep this file. You'll extend it in Phase 6 (Owner) with unit economics.",
+  skills:["pnl","budgeting"], resource:null },
+
+{ day:24, format:"simulation", theme:"Revenue Up, Cash Down",
+  why:"Simulate the exact trap from Day 22 before it happens to you for real.",
+  learn:"Simulation: Your butchery's monthly revenue has grown 30% over three months — great news on paper. But you've started offering 30-day accounts to two larger restaurant clients to win their business, your meat stock costs have risen with volume, and you just bought a second display fridge on a payment plan. Cash in the bank has actually fallen for two consecutive months despite the growth.\n\nWork through it: what are the two or three most likely specific causes here, and which one would you investigate first?",
+  think:"Name the specific cause you'd check first, and why that one before the others.",
+  act:"Write the one lever you'd pull first to fix it — tighten payment terms, slow the stock spend, pause the equipment purchase, or something else — and why that's the right first move rather than the others.",
+  build:null,
+  skills:["cash-flow","decision-theory"], resource:null },
+
+{ day:25, format:"case_study", theme:"The Profitable Company That Went Bankrupt",
+  why:"This is the fullest version of the pattern you've been building toward all week.",
+  learn:"Composite case: A growing contracting business wins a large, prestigious project. It's genuinely profitable on paper — the margin on the contract is healthy. But the client pays 60 days after invoice, while the business has to pay its own suppliers and subcontractors within 14 days to keep them working. To bridge the gap, the business draws down its cash reserves, then a credit line. A second, smaller client pays late. The business, profitable the entire time on paper, cannot make payroll and collapses — not from bad work, bad pricing, or bad demand, but from a cash timing mismatch it never modeled.\n\nThis is the single most common way otherwise well-run small businesses die. It's rarely covered in casual business conversation because 'we were profitable' sounds like it should have been enough. It isn't.",
+  think:"Where, specifically, could a version of this happen in the butchery — a gap between when you pay suppliers and when customers pay you?",
+  act:"Write one concrete change to your terms (deposits, faster invoicing, supplier terms) that would narrow that gap before it becomes a real problem.",
+  build:null,
+  skills:["cash-flow","risk-management"], resource:null },
+
+{ day:26, format:"decision_exercise", theme:"Where Does the Next R10,000 Go?",
+  why:"Capital allocation is a skill you'll use forever, at every scale. Practice it small, now, before the stakes are large.",
+  learn:"Every rand you put into a business is a decision not to put it somewhere else — more stock, a better fridge, marketing spend, a course, savings, or simply not spending it yet. Good capital allocation isn't about finding the single 'best' option in the abstract; it's about comparing your actual real options against each other, honestly, given what you know right now.",
+  think:null,
+  act:"If you genuinely had a spare R10,000 for one of your ventures today, list your three real options and rank them. Write one sentence on why the top choice beats the other two, specifically.",
+  build:null,
+  skills:["capital-allocation","decision-theory"], resource:null },
+
+{ day:27, format:"field_mission", theme:"Audit Last Month's Real Spending",
+  why:"Return to the Day 5–6 exercise with a full month behind you, at business scale this time.",
+  learn:"The 24-hour tracking mission showed you a snapshot. A full month shows you a pattern — recurring costs you'd stopped noticing, subscriptions that quietly outlived their usefulness, categories that are larger or smaller than your gut estimate.",
+  think:null,
+  act:"Pull together, as best you can, last month's actual spending across your ventures. Identify one cost you'd genuinely forgotten you were paying for.",
+  build:"Note it for the Month 1 review.",
+  skills:["budgeting","cash-flow"], resource:null },
+
+{ day:28, format:"weekly_review", theme:"Week 4 Founder Review",
+  why:"Last weekly review before the Month 1 capstone.",
+  learn:null,
+  think:"Reread your Day 4 standards one more time. Across the full four weeks, where did you actually hold them, and where did you quietly let them slide?",
+  act:"Answer: What did I accomplish this week? What did I learn? What evidence did I create? What should change going into Month 2?",
+  build:null,
+  skills:["reflection","discipline"], resource:null },
+
+{ day:29, format:"lesson", theme:"Markets, Competition, and Where You Actually Sit",
+  why:"Closing lesson of Foundation's business-fundamentals thread, setting up Phase 2's deeper work on positioning.",
+  learn:"A market is simply the set of people with a shared problem and the means to pay someone to solve it. Understanding a market means understanding three things at minimum: how big it actually is, who else is already serving it and how, and what's currently unsatisfied even among people already being served.\n\nA common early mistake is treating 'no direct competitors' as good news. Usually it means either the market is smaller than hoped, or the problem isn't as painful as assumed, or — sometimes — there's a real gap. The way to tell the difference isn't guessing; it's the customer-discovery work you started on Day 20, done at greater depth. That's the whole subject of Phase 2.",
+  think:"For the butchery: who else, right now, is already solving 'get good meat' for your likely customer — including imperfect substitutes like supermarkets, not just other butcheries?",
+  act:"List three, and one sentence each on what they're currently doing well or poorly for that customer.",
+  build:null,
+  skills:["markets","competitive-analysis"], resource:null },
+
+{ day:30, format:"monthly_review", theme:"Month 1 Capability Review",
+  why:"The first monthly checkpoint. Not a celebration of 30 days completed — an honest look at what actually changed.",
+  learn:"This program measures capability, not completion. Thirty finished days is not itself the achievement. What matters is: what can you now do, or see, or decide, that you genuinely couldn't a month ago — backed by evidence you actually created, not a feeling that you've been busy.\n\nThis review format repeats every month, all year: capability, business, finance, systems, time, relationships, personal, freedom, and what deserves attention next.",
+  think:"Reread everything you wrote this month — your standards, your P&L, your customer conversation, your cash-flow answers. What's the single clearest piece of evidence that you're more capable now than on Day 1?",
+  act:"Write the full Month 1 review: Capability — what can I now do that I couldn't? Business — what changed in the three ventures? Finance — what changed, concretely? Systems — what's even slightly less dependent on me? Time — where did it actually go, per Day 2 and 27? Personal — what changed? Freedom — more capable, or just busier? Next month — what deserves attention first?",
+  build:"This closes Month 1 of Phase 1 (Foundation). Weeks 5–8 continue building toward the Phase 1 capstone at Day 52 — authored in the next pass of this program.",
+  skills:["reflection","self-awareness","responsibility"], resource:null },
+];
+
+// ============================================================
+// KNOWLEDGE LIBRARY — seed concepts (searchable, "Explain This")
+// ============================================================
+const LIBRARY = [
+  { id:"gross-margin", term:"Gross Margin",
+    short:"What's left from a sale after the direct cost of producing it, as a percentage of the sale price.",
+    medium:"Gross margin = (Revenue − Cost of Goods Sold) ÷ Revenue. It tells you how much of every rand of sales actually stays in the business before overheads like rent, salaries, or marketing are paid. A butchery selling meat at R150/kg that cost R100/kg to source has a gross margin of 33%.",
+    application:"Use it to compare products or services within your own business — which one actually leaves you the most room to cover overheads and profit — not just which sells the most.",
+    mistakes:"Confusing gross margin with net profit. A healthy gross margin can still result in a loss if overheads are too high.",
+    related:["cash-flow","pnl","pricing"] },
+  { id:"cash-flow", term:"Cash Flow",
+    short:"The actual movement of money in and out of the business, regardless of what's owed or earned on paper.",
+    medium:"Cash flow is distinct from profit. A business can be profitable on paper and still run out of cash if payments are timed badly — money owed to you arrives late while money you owe goes out on time.",
+    application:"Track cash flow separately from your P&L, especially if you extend payment terms to customers or hold physical stock.",
+    mistakes:"Assuming 'we're profitable' means 'we're fine.' See the Day 25 case study.",
+    related:["gross-margin","pnl","budgeting"] },
+  { id:"cac", term:"Customer Acquisition Cost (CAC)",
+    short:"What it costs you, on average, to win one new paying customer.",
+    medium:"CAC = total spend on acquiring customers over a period ÷ number of new customers gained in that period. It only becomes meaningful compared against Customer Lifetime Value (CLV) — a low CAC is worthless if the customer is worth even less.",
+    application:"Before spending on ads or promotions, estimate CAC against what a customer is actually worth to you over time.",
+    mistakes:"Counting only ad spend and ignoring the time cost of manual outreach, which is real cost even if no cash changes hands.",
+    related:["retention","distribution","unit-economics"] },
+  { id:"value-proposition", term:"Value Proposition",
+    short:"A specific, one-sentence statement of who you help, what problem you solve, and why your way beats the alternative.",
+    medium:"A strong value proposition names a specific customer and a specific pain, and states plainly why doing business with you beats their current alternative — including doing nothing.",
+    application:"Use it as a test: if a sentence about your business could apply to almost any competitor, it isn't a value proposition yet.",
+    mistakes:"Describing everything you do instead of the one sharpest true thing that matters most to the customer.",
+    related:["positioning","pricing"] },
+  { id:"reversible-decisions", term:"Reversible vs Irreversible Decisions",
+    short:"A way of matching how much deliberation a decision deserves to how costly it actually is to get wrong.",
+    medium:"Two-way-door decisions can be undone if they don't work. One-way-door decisions can't, or can't easily. Treating every decision like a one-way door is a common, quiet source of slowness and perfectionism.",
+    application:"Before deliberating at length, ask: can I reverse this if it's wrong? If yes, decide fast and review the outcome later.",
+    mistakes:"Using 'this could be reversed eventually, with enough cost and pain' as if that made it a two-way door — reversibility only counts if it's genuinely cheap.",
+    related:["decision-theory","responsibility"] },
+];
+
+if (typeof module !== "undefined") { module.exports = { PHASES, DAYS, SKILL_CATEGORIES, SKILL_LEVELS, FORMATS, LIBRARY, phaseForDay, weekForDay, monthForDay }; }
+
+</script>
+<script>
+// ============================================================
+// FOUNDER'S UNIVERSITY — APPLICATION LOGIC
+// Vanilla JS, hash-routed, single localStorage record.
+// ============================================================
+const STORE_KEY = "foundersUniversity.v1";
+const LAST_AUTHORED_DAY = 30; // days beyond this are visible on the roadmap but not yet built
+
+function defaultState(){
+  return {
+    theme: "dark",
+    currentDay: 1,
+    days: {},        // day -> {morningPromise, morningDoneAt, eveningNotes, promiseKept, eveningDoneAt, act, think}
+    skills: {},       // skillId -> level index (0-8)
+    evidence: [],     // {id, date, day, title, note, type}
+    projects: [],     // {id, name, why, stage, nextAction, createdAt}
+    decisions: [],    // {id, date, decision, context, options, choice, confidence, outcome, outcomeNote}
+    ideas: [],        // {id, date, name, problem, customer, stage, note}
+    freedom: { financial:50, time:50, business:50, skill:50, decision:50 },
+    reviews: [],       // {id, day, week, type, text, createdAt}
+  };
+}
+
+let STATE = load();
+
+function load(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(!raw) return defaultState();
+    const parsed = JSON.parse(raw);
+    return Object.assign(defaultState(), parsed);
+  }catch(e){ console.warn("FU: load failed", e); return defaultState(); }
+}
+function save(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(STATE)); }
+  catch(e){ console.warn("FU: save failed", e); toast("Couldn't save — storage may be full or blocked."); }
+}
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast._t); toast._t = setTimeout(()=>t.classList.remove("show"), 2200);
+}
+function uid(){ return Math.random().toString(36).slice(2,10); }
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+
+function dayRecord(d){
+  if(!STATE.days[d]) STATE.days[d] = {};
+  return STATE.days[d];
+}
+function isAuthored(d){ return d>=1 && d<=LAST_AUTHORED_DAY; }
+function dayData(d){ return DAYS.find(x=>x.day===d) || null; }
+function skillLevel(id){ return STATE.skills[id] ?? 0; }
+function setSkillLevel(id, lvl){ STATE.skills[id] = Math.max(0, Math.min(8, lvl)); save(); }
+
+function completedDaysCount(){
+  return Object.values(STATE.days).filter(r=>r.eveningDoneAt).length;
+}
+function currentStreak(){
+  let d = STATE.currentDay, streak = 0;
+  while(d>=1 && STATE.days[d] && STATE.days[d].eveningDoneAt){ streak++; d--; }
+  return streak;
+}
+
+// ---------------- Router ----------------
+const ROUTES = ["home","learn","roadmap","skills","evidence","projects","decisions","ideas","library","freedom","reviews","more"];
+function currentRoute(){
+  const h = (location.hash||"#/home").replace("#/","");
+  return ROUTES.includes(h) ? h : "home";
+}
+window.addEventListener("hashchange", render);
+window.addEventListener("DOMContentLoaded", ()=>{
+  document.documentElement.setAttribute("data-theme", STATE.theme==="light" ? "light" : "dark");
+  render();
+});
+
+function nav(route){ location.hash = "#/"+route; }
+
+// ---------------- Shell ----------------
+const NAV_ITEMS = [
+  {r:"home", label:"Home", ic:"⌂"},
+  {r:"learn", label:"Learn", ic:"▤"},
+  {r:"roadmap", label:"Roadmap", ic:"▦"},
+  {r:"skills", label:"Skills", ic:"◈"},
+];
+const MORE_ITEMS = [
+  {r:"evidence", label:"Evidence", ic:"✓", desc:"Everything you've actually proven, over time."},
+  {r:"projects", label:"Projects", ic:"▣", desc:"What you're currently building."},
+  {r:"decisions", label:"Decision Journal", ic:"⌥", desc:"Record real decisions, review outcomes later."},
+  {r:"ideas", label:"Idea Vault", ic:"✦", desc:"Capture ideas without committing to them."},
+  {r:"library", label:"Knowledge Library", ic:"⌘", desc:"Explain-this concepts, searchable."},
+  {r:"freedom", label:"Freedom Index", ic:"◎", desc:"Financial, time, business, skill, decision freedom."},
+  {r:"reviews", label:"Reviews", ic:"≡", desc:"Every weekly and monthly review you've written."},
+];
+
+function render(){
+  const route = currentRoute();
+  const app = document.getElementById("app");
+  app.innerHTML = "";
+
+  const rail = document.createElement("nav"); rail.className = "rail";
+  rail.innerHTML = `
+    <div class="rail-brand"><div class="mark">Venture Forge</div><div class="sub">Dylan Metcalf · Day ${STATE.currentDay} of 365</div></div>
+    ${NAV_ITEMS.map(i=>railLink(i,route)).join("")}
+    <div class="rail-section">More</div>
+    ${MORE_ITEMS.map(i=>railLink(i,route)).join("")}
+    <div class="rail-foot">Capability &gt; completion.</div>
+  `;
+
+  const main = document.createElement("div"); main.className = "main";
+  const top = document.createElement("div"); top.className = "topbar";
+  top.innerHTML = `
+    <h1>${titleFor(route)}</h1>
+    <div class="topbar-actions">
+      <button class="icon-btn" id="themeBtn" title="Toggle theme">${STATE.theme==="light"?"☾":"☀"}</button>
+    </div>`;
+  const content = document.createElement("div");
+  content.className = "content" + (route==="roadmap"?" wide":"");
+  content.appendChild(viewFor(route));
+  main.appendChild(top); main.appendChild(content);
+
+  const tabbar = document.createElement("nav"); tabbar.className = "tabbar";
+  const tabRoutes = [...NAV_ITEMS, {r:"more", label:"More", ic:"⋯"}];
+  tabbar.innerHTML = tabRoutes.map(i=>`
+    <button class="tab-item ${route===i.r || (i.r==="more" && MORE_ITEMS.some(m=>m.r===route)) ?"active":""}" data-r="${i.r}">
+      <span class="ic">${i.ic}</span><span>${i.label}</span>
+    </button>`).join("");
+
+  app.appendChild(rail); app.appendChild(main); app.appendChild(tabbar);
+
+  document.querySelectorAll("[data-r]").forEach(el=>el.addEventListener("click", ()=>nav(el.getAttribute("data-r"))));
+  document.getElementById("themeBtn").addEventListener("click", ()=>{
+    STATE.theme = STATE.theme==="light" ? "dark" : "light"; save();
+    document.documentElement.setAttribute("data-theme", STATE.theme);
+    render();
+  });
+}
+function railLink(item, route){
+  return `<a class="rail-link ${route===item.r?"active":""}" data-r="${item.r}"><span class="dot"></span>${item.label}</a>`;
+}
+function titleFor(route){
+  const found = [...NAV_ITEMS, ...MORE_ITEMS].find(i=>i.r===route);
+  return found ? found.label : "More";
+}
+
+function viewFor(route){
+  switch(route){
+    case "home": return viewHome();
+    case "learn": return viewLearn();
+    case "roadmap": return viewRoadmap();
+    case "skills": return viewSkills();
+    case "evidence": return viewEvidence();
+    case "projects": return viewProjects();
+    case "decisions": return viewDecisions();
+    case "ideas": return viewIdeas();
+    case "library": return viewLibrary();
+    case "freedom": return viewFreedom();
+    case "reviews": return viewReviews();
+    case "more": return viewMore();
+    default: return viewHome();
+  }
+}
+
+function el(html){ const t=document.createElement("template"); t.innerHTML=html.trim(); return t.content.firstChild; }
+
+// ---------------- HOME ----------------
+function viewHome(){
+  const d = STATE.currentDay;
+  const phase = phaseForDay(d);
+  const dd = dayData(d);
+  const rec = dayRecord(d);
+  const wrap = el(`<div></div>`);
+
+  const hero = el(`
+    <div class="hero">
+      <div class="eyebrow">${phase.stage}</div>
+      <div class="phase">${phase.name} · Phase ${phase.id} of 7</div>
+      <div class="daynum">Day ${d}</div>
+      <div class="muted" style="margin-bottom:14px;">${dd ? dd.theme : "Not yet authored"}</div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn primary" id="goLearn">${rec.morningDoneAt ? (rec.eveningDoneAt ? "Review today" : "Continue to Evening") : "Start today"}</button>
+        <button class="btn ghost" id="goRoadmap">See the year</button>
+      </div>
+    </div>
+  `);
+  wrap.appendChild(hero);
+
+  const stats = el(`
+    <div class="grid3" style="margin-top:16px;">
+      <div class="stat"><div class="n">${completedDaysCount()}</div><div class="l">days completed</div></div>
+      <div class="stat"><div class="n">${currentStreak()}</div><div class="l">day streak</div></div>
+      <div class="stat"><div class="n">${STATE.evidence.length}</div><div class="l">pieces of evidence</div></div>
+    </div>
+  `);
+  wrap.appendChild(stats);
+
+  if(rec.morningPromise){
+    wrap.appendChild(el(`
+      <div class="card" style="margin-top:14px;">
+        <div class="eyebrow">Today's promise</div>
+        <div>${escapeHtml(rec.morningPromise)}</div>
+        ${rec.eveningDoneAt ? `<div style="margin-top:8px;"><span class="pill ${rec.promiseKept?"sage":"clay"}">${rec.promiseKept?"Kept":"Not kept"}</span></div>` : `<div class="faint" style="margin-top:8px; font-size:12px;">Graded this evening.</div>`}
+      </div>
+    `));
+  }
+
+  const freedomAvg = Math.round(Object.values(STATE.freedom).reduce((a,b)=>a+b,0)/5);
+  wrap.appendChild(el(`
+    <div class="card" style="margin-top:14px; cursor:pointer;" id="freedomCard">
+      <div class="eyebrow">Freedom Index</div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="serif" style="font-size:26px;">${freedomAvg}</div>
+        <div class="muted" style="font-size:12.5px;">More capability, more ownership, more time — not just more busy. Tap to update.</div>
+      </div>
+    </div>
+  `));
+
+  wrap.appendChild(el(`<div style="margin-top:14px;"></div>`));
+  const phaseSummary = el(`
+    <div class="card">
+      <div class="eyebrow">This phase — ${phase.name}</div>
+      <div class="muted" style="font-size:13px;">${phase.focus}</div>
+    </div>
+  `);
+  wrap.appendChild(phaseSummary);
+
+  setTimeout(()=>{
+    const gl = document.getElementById("goLearn"); if(gl) gl.addEventListener("click", ()=>nav("learn"));
+    const gr = document.getElementById("goRoadmap"); if(gr) gr.addEventListener("click", ()=>nav("roadmap"));
+    const fc = document.getElementById("freedomCard"); if(fc) fc.addEventListener("click", ()=>nav("freedom"));
+  });
+  return wrap;
+}
+
+// ---------------- LEARN (Morning / Evening) ----------------
+function viewLearn(){
+  const d = STATE.currentDay;
+  const dd = dayData(d);
+  const rec = dayRecord(d);
+  const phase = phaseForDay(d);
+  const wrap = el(`<div></div>`);
+
+  wrap.appendChild(el(`
+    <div class="eyebrow">${phase.name} · Week ${weekForDay(d)} · ${dd ? (FORMATS[dd.format]||dd.format) : ""}</div>
+    <div class="daynum serif" style="font-size:30px; margin-bottom:2px;">Day ${d}${dd?" — "+dd.theme:""}</div>
+  `));
+
+  if(!dd){
+    wrap.appendChild(el(`
+      <div class="card" style="margin-top:16px;">
+        <div class="muted">Day ${d} hasn't been authored yet. Days 1–${LAST_AUTHORED_DAY} (Phase 1, Month 1) are fully built. The remaining days are scaffolded in the roadmap and will be written with the same care in the next pass, rather than filled with placeholder content.</div>
+        ${d>1 ? `<button class="btn ghost sm" style="margin-top:12px;" id="backDay">← Back to Day ${d-1}</button>`:""}
+      </div>
+    `));
+    setTimeout(()=>{ const b=document.getElementById("backDay"); if(b) b.addEventListener("click", ()=>{ STATE.currentDay=d-1; save(); render(); }); });
+    return wrap;
+  }
+
+  const mode = rec.morningDoneAt && !rec.eveningDoneAt ? "evening" : (rec.eveningDoneAt ? "evening" : "morning");
+  const toggle = el(`
+    <div class="mode-toggle" style="margin-top:14px;">
+      <button data-m="morning" class="${mode==="morning"?"active":""}">Morning</button>
+      <button data-m="evening" class="${mode==="evening"?"active":""}" ${!rec.morningDoneAt?"disabled":""}>Evening</button>
+    </div>
+  `);
+  wrap.appendChild(toggle);
+
+  const body = el(`<div id="learnBody"></div>`);
+  wrap.appendChild(body);
+
+  function renderMode(m){
+    body.innerHTML = "";
+    if(m==="morning") body.appendChild(morningBlock(d, dd, rec));
+    else body.appendChild(eveningBlock(d, dd, rec));
+    wireMorningEvening(d, dd, rec);
+  }
+  setTimeout(()=>{
+    toggle.querySelectorAll("button").forEach(b=>b.addEventListener("click", ()=>{
+      if(b.disabled) return;
+      toggle.querySelectorAll("button").forEach(x=>x.classList.remove("active"));
+      b.classList.add("active");
+      renderMode(b.getAttribute("data-m"));
+    }));
+    renderMode(mode);
+  });
+
+  return wrap;
+}
+
+function block(label, text){
+  if(!text) return "";
+  return `<div class="day-block"><div class="k">${label}</div><p>${escapeHtml(text)}</p></div>`;
+}
+
+function morningBlock(d, dd, rec){
+  return el(`
+    <div>
+      ${block("Why it matters", dd.why)}
+      ${dd.learn ? block("Learn", dd.learn) : ""}
+      ${dd.think ? block("Think", dd.think) : ""}
+      ${dd.act ? block("Act", dd.act) : ""}
+      ${dd.build ? block("Build / Evidence", dd.build) : ""}
+      ${dd.resource ? `<div class="day-block"><div class="k">Resource</div><div class="muted" style="font-size:13px;">${dd.resource.type==="book"?"Book":dd.resource.type} — <strong>${dd.resource.title}</strong>${dd.resource.author?` by ${dd.resource.author}`:""}${dd.resource.note?`. ${dd.resource.note}`:""}</div></div>` : ""}
+      <div class="card" style="margin-top:18px;">
+        <div class="eyebrow">Today's promise</div>
+        <div class="muted" style="font-size:12.5px; margin-bottom:8px;">One thing you will definitely do today.</div>
+        <textarea id="promiseInput" placeholder="I will...">${escapeAttr(rec.morningPromise||"")}</textarea>
+        <button class="btn primary" id="commitBtn" style="margin-top:10px;">${rec.morningDoneAt? "Update promise":"Commit to today"}</button>
+      </div>
+    </div>
+  `);
+}
+function eveningBlock(d, dd, rec){
+  return el(`
+    <div>
+      <div class="card">
+        <div class="eyebrow">This morning's promise</div>
+        <div style="margin-bottom:10px;">${escapeHtml(rec.morningPromise||"—")}</div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn sm ${rec.promiseKept===true?"primary":""}" id="keptYes">Kept</button>
+          <button class="btn sm ${rec.promiseKept===false?"danger":""}" id="keptNo">Not kept</button>
+        </div>
+      </div>
+      <div class="card" style="margin-top:12px;">
+        <label class="field-label">What did you actually do?</label>
+        <textarea id="evAct">${escapeAttr(rec.evAct||"")}</textarea>
+        <label class="field-label">What did you learn?</label>
+        <textarea id="evLearn">${escapeAttr(rec.evLearn||"")}</textarea>
+        <label class="field-label">What did you avoid?</label>
+        <textarea id="evAvoid">${escapeAttr(rec.evAvoid||"")}</textarea>
+        <label class="field-label">What evidence did you create? (optional — adds to your Evidence Timeline)</label>
+        <textarea id="evEvidence" placeholder="Leave blank if nothing concrete today.">${escapeAttr(rec.evEvidence||"")}</textarea>
+      </div>
+      <button class="btn primary" id="finishDay" style="margin-top:14px; width:100%;">${rec.eveningDoneAt? "Update tonight's receipt" : "Close out Day "+d}</button>
+      ${rec.eveningDoneAt && d<365 ? `<button class="btn" id="advanceBtn" style="margin-top:10px; width:100%;">Advance to Day ${d+1} →</button>`:""}
+    </div>
+  `);
+}
+function wireMorningEvening(d, dd, rec){
+  const commitBtn = document.getElementById("commitBtn");
+  if(commitBtn) commitBtn.addEventListener("click", ()=>{
+    const v = document.getElementById("promiseInput").value.trim();
+    if(!v){ toast("Write a promise first."); return; }
+    rec.morningPromise = v; rec.morningDoneAt = Date.now(); save();
+    toast("Committed. See you tonight."); render();
+  });
+  const keptYes = document.getElementById("keptYes"); const keptNo = document.getElementById("keptNo");
+  if(keptYes) keptYes.addEventListener("click", ()=>{ rec.promiseKept=true; save(); render(); });
+  if(keptNo) keptNo.addEventListener("click", ()=>{ rec.promiseKept=false; save(); render(); });
+  const finishBtn = document.getElementById("finishDay");
+  if(finishBtn) finishBtn.addEventListener("click", ()=>{
+    if(rec.promiseKept===undefined){ toast("Mark the promise kept or not kept first."); return; }
+    rec.evAct = document.getElementById("evAct").value;
+    rec.evLearn = document.getElementById("evLearn").value;
+    rec.evAvoid = document.getElementById("evAvoid").value;
+    rec.evEvidence = document.getElementById("evEvidence").value;
+    rec.eveningDoneAt = Date.now();
+    if(rec.evEvidence && rec.evEvidence.trim()){
+      STATE.evidence.push({id:uid(), date:todayISO(), day:d, title:"Day "+d+" — "+dd.theme, note:rec.evEvidence.trim(), type:"daily"});
+    }
+    save(); toast("Day "+d+" closed out."); render();
+  });
+  const adv = document.getElementById("advanceBtn");
+  if(adv) adv.addEventListener("click", ()=>{ STATE.currentDay = d+1; save(); render(); });
+}
+
+// ---------------- ROADMAP ----------------
+function viewRoadmap(){
+  const wrap = el(`<div></div>`);
+  wrap.appendChild(el(`<div class="muted" style="margin-bottom:16px; font-size:13.5px;">The full year, visible from Day 1. Days 1–${LAST_AUTHORED_DAY} are built and ready. The rest are real slots waiting on content, not placeholders pretending to be lessons.</div>`));
+  PHASES.forEach(p=>{
+    const row = el(`
+      <div class="phase-row">
+        <div class="top">
+          <div><strong>${p.name}</strong> <span class="faint">· Phase ${p.id}</span></div>
+          <span class="pill">Days ${p.range[0]}–${p.range[1]}</span>
+        </div>
+        <div class="muted" style="font-size:12.5px; margin-top:6px;">${p.focus}</div>
+      </div>
+    `);
+    wrap.appendChild(row);
+  });
+
+  wrap.appendChild(el(`<div class="eyebrow" style="margin-top:18px;">Weeks 1–4 in detail</div>`));
+  for(let w=1; w<=Math.ceil(LAST_AUTHORED_DAY/7); w++){
+    const start = (w-1)*7+1, end = Math.min(w*7, 365);
+    const chips = [];
+    for(let day=start; day<=end; day++){
+      let cls = "day-chip";
+      if(day===STATE.currentDay) cls += " today";
+      else if(STATE.days[day] && STATE.days[day].eveningDoneAt) cls += " done";
+      else if(isAuthored(day)) cls += " authored";
+      else cls += " locked";
+      chips.push(`<div class="${cls}" data-day="${day}" title="Day ${day}">${day}</div>`);
+    }
+    wrap.appendChild(el(`
+      <div class="card" style="margin-top:10px;">
+        <div class="eyebrow">Week ${w}</div>
+        <div class="week-grid">${chips.join("")}</div>
+      </div>
+    `));
+  }
+
+  setTimeout(()=>{
+    wrap.querySelectorAll("[data-day]").forEach(c=>c.addEventListener("click", ()=>{
+      const day = parseInt(c.getAttribute("data-day"),10);
+      if(!isAuthored(day)){ toast("Day "+day+" isn't authored yet."); return; }
+      STATE.currentDay = day; save(); nav("learn");
+    }));
+  });
+  return wrap;
+}
+
+// ---------------- SKILLS ----------------
+function viewSkills(){
+  const wrap = el(`<div></div>`);
+  wrap.appendChild(el(`<div class="muted" style="margin-bottom:14px; font-size:13.5px;">Self-rated, evidence-checked. Move a skill forward only when you can point to something you actually did — this program will keep asking.</div>`));
+  Object.entries(SKILL_CATEGORIES).forEach(([cat, skills])=>{
+    const card = el(`<div class="card"><div class="eyebrow">${cat}</div></div>`);
+    skills.forEach(sid=>{
+      const lvl = skillLevel(sid);
+      const row = el(`
+        <div class="skill-row">
+          <div class="skill-name">${labelize(sid)}</div>
+          <div class="skill-bar"><div style="width:${(lvl/8)*100}%"></div></div>
+          <div class="skill-lvl">${SKILL_LEVELS[lvl]}</div>
+        </div>
+      `);
+      row.addEventListener("click", ()=>{
+        const next = (lvl+1)%9;
+        setSkillLevel(sid, next);
+        render();
+      });
+      row.style.cursor = "pointer";
+      card.appendChild(row);
+    });
+    wrap.appendChild(card);
+  });
+  return wrap;
+}
+function labelize(id){ return id.split("-").map(w=>w[0].toUpperCase()+w.slice(1)).join(" "); }
+
+// ---------------- EVIDENCE ----------------
+function viewEvidence(){
+  const wrap = el(`<div></div>`);
+  wrap.appendChild(el(`
+    <div class="card">
+      <div class="eyebrow">Add evidence manually</div>
+      <label class="field-label">Title</label>
+      <input type="text" id="evTitle" placeholder="e.g. First butchery customer conversation">
+      <label class="field-label">What happened, specifically?</label>
+      <textarea id="evNote"></textarea>
+      <button class="btn primary" id="addEvidence" style="margin-top:10px;">Add to timeline</button>
+    </div>
+  `));
+  const list = el(`<div style="margin-top:16px;"></div>`);
+  const sorted = [...STATE.evidence].sort((a,b)=> (b.day||0)-(a.day||0));
+  if(sorted.length===0){
+    list.appendChild(el(`<div class="empty">Nothing here yet. Evidence builds as you close out days and log real outcomes.</div>`));
+  } else {
+    const card = el(`<div class="card"></div>`);
+    sorted.forEach(e=>{
+      card.appendChild(el(`
+        <div class="item-row">
+          <div>
+            <div style="font-size:13.5px;">${escapeHtml(e.title)}</div>
+            <div class="muted" style="font-size:12.5px; margin-top:2px;">${escapeHtml(e.note)}</div>
+            <div class="faint" style="font-size:11px; margin-top:4px;">${e.date}${e.day?` · Day ${e.day}`:""}</div>
+          </div>
+        </div>
+      `));
+    });
+    list.appendChild(card);
+  }
+  wrap.appendChild(list);
+
+  setTimeout(()=>{
+    document.getElementById("addEvidence").addEventListener("click", ()=>{
+      const title = document.getElementById("evTitle").value.trim();
+      const note = document.getElementById("evNote").value.trim();
+      if(!title){ toast("Give it a title."); return; }
+      STATE.evidence.push({id:uid(), date:todayISO(), day:STATE.currentDay, title, note, type:"manual"});
+      save(); render();
+    });
+  });
+  return wrap;
+}
+
+// ---------------- PROJECTS ----------------
+function viewProjects(){
+  const wrap = el(`<div></div>`);
+  wrap.appendChild(el(`
+    <div class="card">
+      <div class="eyebrow">New project</div>
+      <label class="field-label">Name</label>
+      <input type="text" id="pName" placeholder="e.g. Butchery soft launch">
+      <label class="field-label">Why does this matter?</label>
+      <textarea id="pWhy"></textarea>
+      <label class="field-label">Next action</label>
+      <input type="text" id="pNext" placeholder="e.g. Get three supplier quotes">
+      <button class="btn primary" id="addProject" style="margin-top:10px;">Create project</button>
+    </div>
+  `));
+  const list = el(`<div style="margin-top:16px;"></div>`);
+  if(STATE.projects.length===0){
+    list.appendChild(el(`<div class="empty">No active projects yet.</div>`));
+  } else {
+    STATE.projects.slice().reverse().forEach(p=>{
+      const card = el(`
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:baseline;">
+            <strong>${escapeHtml(p.name)}</strong>
+            <select data-id="${p.id}" class="stageSel" style="width:auto; padding:5px 8px; font-size:11.5px;">
+              ${["Active","Parked","Researching","Validating","Building","Live","Abandoned"].map(s=>`<option ${p.stage===s?"selected":""}>${s}</option>`).join("")}
+            </select>
+          </div>
+          <div class="muted" style="font-size:12.5px; margin-top:6px;">${escapeHtml(p.why||"")}</div>
+          <div class="faint" style="font-size:11.5px; margin-top:8px;">Next: ${escapeHtml(p.nextAction||"—")}</div>
+        </div>
+      `);
+      list.appendChild(card);
+    });
+  }
+  wrap.appendChild(list);
+
+  setTimeout(()=>{
+    document.getElementById("addProject").addEventListener("click", ()=>{
+      const name = document.getElementById("pName").value.trim();
+      if(!name){ toast("Name it first."); return; }
+      STATE.projects.push({id:uid(), name, why:document.getElementById("pWhy").value.trim(), nextAction:document.getElementById("pNext").value.trim(), stage:"Active", createdAt:Date.now()});
+      save(); render();
+    });
+    document.querySelectorAll(".stageSel").forEach(s=>s.addEventListener("change", ()=>{
+      const p = STATE.projects.find(x=>x.id===s.getAttribute("data-id"));
+      if(p){ p.stage = s.value; save(); }
+    }));
+  });
+  return wrap;
+}
+
+// ---------------- DECISIONS ----------------
+function viewDecisions(){
+  const wrap = el(`<div></div>`);
+  wrap.appendChild(el(`
+    <div class="card">
+      <div class="eyebrow">Record a decision</div>
+      <label class="field-label">The decision</label>
+      <input type="text" id="dDecision" placeholder="e.g. Raise butchery prices 8%">
+      <label class="field-label">Context</label>
+      <textarea id="dContext"></textarea>
+      <label class="field-label">Options considered</label>
+      <textarea id="dOptions"></textarea>
+      <label class="field-label">Confidence (1–10)</label>
+      <input type="number" id="dConf" min="1" max="10" value="7">
+      <button class="btn primary" id="addDecision" style="margin-top:10px;">Save decision</button>
+    </div>
+  `));
+  const list = el(`<div style="margin-top:16px;"></div>`);
+  if(STATE.decisions.length===0){
+    list.appendChild(el(`<div class="empty">No decisions logged yet.</div>`));
+  } else {
+    STATE.decisions.slice().reverse().forEach(dec=>{
+      const card = el(`
+        <div class="card">
+          <strong>${escapeHtml(dec.decision)}</strong>
+          <div class="muted" style="font-size:12.5px; margin-top:6px;">${escapeHtml(dec.context||"")}</div>
+          <div class="faint" style="font-size:11.5px; margin-top:6px;">Confidence ${dec.confidence}/10 · ${dec.date}</div>
+          <hr class="rule">
+          <div class="eyebrow">Outcome review</div>
+          <textarea data-id="${dec.id}" class="outcomeNote" placeholder="What actually happened? Bad decision, or bad outcome despite a good decision?">${escapeAttr(dec.outcomeNote||"")}</textarea>
+          <button class="btn sm" data-save="${dec.id}" style="margin-top:8px;">Save outcome</button>
+        </div>
+      `);
+      list.appendChild(card);
+    });
+  }
+  wrap.appendChild(list);
+
+  setTimeout(()=>{
+    document.getElementById("addDecision").addEventListener("click", ()=>{
+      const decision = document.getElementById("dDecision").value.trim();
+      if(!decision){ toast("Describe the decision first."); return; }
+      STATE.decisions.push({id:uid(), date:todayISO(), decision,
+        context:document.getElementById("dContext").value.trim(),
+        options:document.getElementById("dOptions").value.trim(),
+        confidence:parseInt(document.getElementById("dConf").value,10)||5, outcomeNote:""});
+      save(); render();
+    });
+    document.querySelectorAll("[data-save]").forEach(b=>b.addEventListener("click", ()=>{
+      const id = b.getAttribute("data-save");
+      const note = document.querySelector(`.outcomeNote[data-id="${id}"]`).value;
+      const dec = STATE.decisions.find(x=>x.id===id); if(dec){ dec.outcomeNote = note; save(); toast("Saved."); }
+    }));
+  });
+  return wrap;
+}
+
+// ---------------- IDEAS ----------------
+function viewIdeas(){
+  const wrap = el(`<div></div>`);
+  wrap.appendChild(el(`
+    <div class="card">
+      <div class="eyebrow">Capture an idea</div>
+      <div class="muted" style="font-size:12px; margin-bottom:10px;">Capturing it is not the same as committing to it. Most ideas should sit here for a while.</div>
+      <label class="field-label">Idea</label>
+      <input type="text" id="iName" placeholder="e.g. Subscription meat box for Dullstroom weekenders">
+      <label class="field-label">Problem it solves, for whom</label>
+      <textarea id="iProblem"></textarea>
+      <button class="btn primary" id="addIdea" style="margin-top:10px;">Add to vault</button>
+    </div>
+  `));
+  const list = el(`<div style="margin-top:16px;"></div>`);
+  if(STATE.ideas.length===0){
+    list.appendChild(el(`<div class="empty">Vault's empty. Good — ideas should be rare enough to be worth capturing.</div>`));
+  } else {
+    STATE.ideas.slice().reverse().forEach(idea=>{
+      const card = el(`
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:baseline;">
+            <strong>${escapeHtml(idea.name)}</strong>
+            <select data-id="${idea.id}" class="ideaStage" style="width:auto; padding:5px 8px; font-size:11.5px;">
+              ${["Parked","Researching","Validating","Building","Live","Abandoned"].map(s=>`<option ${idea.stage===s?"selected":""}>${s}</option>`).join("")}
+            </select>
+          </div>
+          <div class="muted" style="font-size:12.5px; margin-top:6px;">${escapeHtml(idea.problem||"")}</div>
+          <div class="faint" style="font-size:11px; margin-top:6px;">${idea.date}</div>
+        </div>
+      `);
+      list.appendChild(card);
+    });
+  }
+  wrap.appendChild(list);
+
+  setTimeout(()=>{
+    document.getElementById("addIdea").addEventListener("click", ()=>{
+      const name = document.getElementById("iName").value.trim();
+      if(!name){ toast("Name the idea first."); return; }
+      STATE.ideas.push({id:uid(), date:todayISO(), name, problem:document.getElementById("iProblem").value.trim(), stage:"Parked"});
+      save(); render();
+    });
+    document.querySelectorAll(".ideaStage").forEach(s=>s.addEventListener("change", ()=>{
+      const idea = STATE.ideas.find(x=>x.id===s.getAttribute("data-id"));
+      if(idea){ idea.stage = s.value; save(); }
+    }));
+  });
+  return wrap;
+}
+
+// ---------------- LIBRARY ----------------
+function viewLibrary(){
+  const wrap = el(`<div></div>`);
+  wrap.appendChild(el(`<input type="text" id="libSearch" placeholder="Search concepts — try 'margin' or 'CAC'" style="margin-bottom:14px;">`));
+  const list = el(`<div></div>`);
+  function draw(q){
+    list.innerHTML = "";
+    const term = (q||"").toLowerCase();
+    const items = LIBRARY.filter(c => !term || c.term.toLowerCase().includes(term) || c.short.toLowerCase().includes(term));
+    if(items.length===0){ list.appendChild(el(`<div class="empty">Nothing matches yet — the library grows as later phases are built.</div>`)); return; }
+    items.forEach(c=>{
+      list.appendChild(el(`
+        <details class="card lib-card" style="margin-bottom:10px;">
+          <summary><strong>${c.term}</strong><span class="faint">▾</span></summary>
+          <div class="muted" style="font-size:13px; margin-top:8px;">${c.short}</div>
+          <div class="body">
+            <h4>5-minute explanation</h4><div style="font-size:13px;">${c.medium}</div>
+            <h4>Business application</h4><div style="font-size:13px;">${c.application}</div>
+            <h4>Common mistakes</h4><div style="font-size:13px;">${c.mistakes}</div>
+            <h4>Related</h4><div style="font-size:12.5px;" class="faint">${c.related.join(", ")}</div>
+          </div>
+        </details>
+      `));
+    });
+  }
+  wrap.appendChild(list);
+  setTimeout(()=>{
+    draw("");
+    document.getElementById("libSearch").addEventListener("input", e=>draw(e.target.value));
+  });
+  return wrap;
+}
+
+// ---------------- FREEDOM ----------------
+function viewFreedom(){
+  const wrap = el(`<div></div>`);
+  wrap.appendChild(el(`<div class="muted" style="font-size:13px; margin-bottom:16px;">Not a scientific measurement — a personal management framework. Rate honestly; this isn't graded.</div>`));
+  const card = el(`<div class="card"></div>`);
+  const rows = [
+    ["financial","Financial freedom","Recurring income, reserves, low dependency on the next invoice."],
+    ["time","Time freedom","Founder hours vs recoverable hours you're actually reclaiming."],
+    ["business","Business freedom","How much runs without you having to touch it."],
+    ["skill","Skill freedom","Sales, finance, tech, leadership, strategy — real ability, not theory."],
+    ["decision","Decision freedom","Confidence solving unfamiliar problems without leaning on others."],
+  ];
+  rows.forEach(([key,label,desc])=>{
+    const row = el(`
+      <div class="f-row">
+        <div class="fl"><span>${label}</span><span class="faint">${STATE.freedom[key]}</span></div>
+        <input type="range" min="0" max="100" value="${STATE.freedom[key]}" data-key="${key}">
+        <div class="faint" style="font-size:11.5px; margin-top:4px;">${desc}</div>
+      </div>
+    `);
+    card.appendChild(row);
+  });
+  wrap.appendChild(card);
+  const avg = Math.round(Object.values(STATE.freedom).reduce((a,b)=>a+b,0)/5);
+  wrap.appendChild(el(`<div class="card" style="margin-top:14px; text-align:center;"><div class="eyebrow">Composite</div><div class="serif" style="font-size:32px;">${avg}</div></div>`));
+
+  setTimeout(()=>{
+    card.querySelectorAll("input[type=range]").forEach(r=>r.addEventListener("input", ()=>{
+      STATE.freedom[r.getAttribute("data-key")] = parseInt(r.value,10);
+      save(); render();
+    }));
+  });
+  return wrap;
+}
+
+// ---------------- REVIEWS ----------------
+function viewReviews(){
+  const wrap = el(`<div></div>`);
+  const d = STATE.currentDay;
+  const dd = dayData(d);
+  const isReviewDay = dd && (dd.format==="weekly_review" || dd.format==="monthly_review");
+  if(isReviewDay){
+    wrap.appendChild(el(`<div class="card"><div class="muted" style="font-size:13px;">Today (Day ${d}) is a review day. Complete it from the <strong>Learn</strong> tab — your evening reflection there is saved here automatically.</div></div>`));
+  }
+  const reviewDays = Object.entries(STATE.days).filter(([day,rec])=>{
+    const data = dayData(parseInt(day,10));
+    return data && (data.format==="weekly_review"||data.format==="monthly_review") && rec.eveningDoneAt;
+  }).sort((a,b)=>b[0]-a[0]);
+
+  const list = el(`<div style="margin-top:14px;"></div>`);
+  if(reviewDays.length===0){
+    list.appendChild(el(`<div class="empty">No reviews completed yet. They land here after you close out a review day.</div>`));
+  } else {
+    reviewDays.forEach(([day, rec])=>{
+      const data = dayData(parseInt(day,10));
+      list.appendChild(el(`
+        <div class="card" style="margin-bottom:10px;">
+          <div class="eyebrow">${data.format==="monthly_review"?"Monthly":"Weekly"} · Day ${day}</div>
+          <div style="font-size:13px; margin-top:6px;"><strong>Accomplished:</strong> ${escapeHtml(rec.evAct||"—")}</div>
+          <div style="font-size:13px; margin-top:4px;"><strong>Learned:</strong> ${escapeHtml(rec.evLearn||"—")}</div>
+          <div style="font-size:13px; margin-top:4px;"><strong>Avoided:</strong> ${escapeHtml(rec.evAvoid||"—")}</div>
+        </div>
+      `));
+    });
+  }
+  wrap.appendChild(list);
+  return wrap;
+}
+
+// ---------------- MORE (mobile) ----------------
+function viewMore(){
+  const wrap = el(`<div></div>`);
+  MORE_ITEMS.forEach(i=>{
+    const row = el(`
+      <div class="item-row" style="cursor:pointer;" data-r="${i.r}">
+        <div>
+          <div style="font-size:14px;">${i.label}</div>
+          <div class="faint" style="font-size:12px; margin-top:2px;">${i.desc}</div>
+        </div>
+        <span class="faint">›</span>
+      </div>
+    `);
+    wrap.appendChild(row);
+  });
+  setTimeout(()=>{ wrap.querySelectorAll("[data-r]").forEach(r=>r.addEventListener("click", ()=>nav(r.getAttribute("data-r")))); });
+  return wrap;
+}
+
+// ---------------- utils ----------------
+function escapeHtml(s){ if(!s) return ""; const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+function escapeAttr(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+</script>
+</body>
+</html>

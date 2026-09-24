@@ -1,39 +1,49 @@
-import type { CurriculumDay, FormatId, Phase, SkillId } from "./types";
-import { PHASE1_MONTH1 } from "./days/phase1-month1";
+import type { CurriculumDay, FormatId, Phase, PillarId, SkillId } from "./types";
+import { FOUNDATION_MONTH1 } from "./days/foundation-month1";
 
 export const PROGRAM_LENGTH = 365;
 
 export const PHASES: Phase[] = [
-  { id: 1, name: "Foundation", range: [1, 52], stage: "Operator",
-    focus: "Personal responsibility, attention, discipline, self-management, business fundamentals, money, cash flow, basic finance, decision-making, thinking clearly, understanding value, understanding markets." },
-  { id: 2, name: "Commercial Capability", range: [53, 104], stage: "Operator",
-    focus: "Sales, customer psychology, marketing, positioning, pricing, negotiation, offers, customer discovery, market research, communication, persuasion, distribution." },
-  { id: 3, name: "Builder", range: [105, 156], stage: "Builder",
-    focus: "Product thinking, problem discovery, software, AI, automation, UX, MVPs, prototyping, testing, data, digital products, technical literacy." },
-  { id: 4, name: "Operator", range: [157, 208], stage: "Systems Thinker",
-    focus: "Operations, systems, SOPs, KPIs, project management, quality control, documentation, automation, delegation, process design, hiring fundamentals, infrastructure." },
-  { id: 5, name: "Leader", range: [209, 260], stage: "Leader",
-    focus: "Leadership, communication, management, feedback, conflict, hiring, culture, influence, negotiation, strategic communication, relationship building, networking." },
-  { id: 6, name: "Owner", range: [261, 312], stage: "Owner",
-    focus: "Ownership, recurring revenue, business models, unit economics, capital allocation, investment fundamentals, valuation, risk, governance, acquisitions, portfolio thinking, founder independence." },
-  { id: 7, name: "Integration", range: [313, 365], stage: "Investor",
-    focus: "Strategy, complex decisions, business building, capital allocation, leadership, systems, product, sales, technology, ownership, personal freedom, life design." },
+  { id: 1, name: "Foundation", range: [1, 52],
+    focus: "Self-command, seeing clearly, how businesses make money, how software works, listening and reading people, and deciding well under uncertainty." },
+  { id: 2, name: "Commercial Edge", range: [53, 104],
+    focus: "Selling, pricing, negotiation, persuasion, positioning and the financial literacy to know whether a deal is actually good." },
+  { id: 3, name: "Builder", range: [105, 156],
+    focus: "Shipping real software with AI: web apps, APIs, databases, agents, automation, testing, deployment and product judgement." },
+  { id: 4, name: "Presence", range: [157, 208],
+    focus: "High-stakes communication, status and power dynamics, conflict, storytelling and composure when the room is against you." },
+  { id: 5, name: "Strategist", range: [209, 260],
+    focus: "Strategy, competitive advantage, reading industries, capital allocation and second-order thinking on real decisions." },
+  { id: 6, name: "Leader", range: [261, 312],
+    focus: "Leverage through people and systems: hiring, delegation, feedback, management and turning yourself into a multiplier." },
+  { id: 7, name: "Integration", range: [313, 365],
+    focus: "Everything at once: complex deals, owning outcomes, capital, and designing the life the capability is for." },
 ];
 
+export interface Pillar {
+  id: PillarId;
+  name: string;
+  /** One line on what the pillar trains. */
+  tagline: string;
+}
+
+export const PILLARS: Record<PillarId, Pillar> = {
+  mind: { id: "mind", name: "Mind", tagline: "Self-command: attention, composure, discipline." },
+  business: { id: "business", name: "Business", tagline: "How money, value and companies actually work." },
+  build: { id: "build", name: "Build", tagline: "AI and software: making real things that run." },
+  influence: { id: "influence", name: "Influence", tagline: "Reading people and rooms; moving them honestly." },
+  judgement: { id: "judgement", name: "Judgement", tagline: "Thinking clearly and deciding well." },
+  field: { id: "field", name: "Field", tagline: "Real-world missions and reviews that combine everything." },
+};
+
 export const SKILL_CATEGORIES: Record<string, SkillId[]> = {
-  Business: ["business-models", "economics", "markets", "strategy", "positioning", "pricing", "competitive-analysis", "customer-research"],
-  Sales: ["prospecting", "discovery", "questioning", "objections", "negotiation", "closing", "follow-up", "relationship-selling"],
-  Marketing: ["messaging", "copywriting", "content", "distribution", "acquisition", "retention", "brand"],
-  Finance: ["revenue", "costs", "gross-margin", "cash-flow", "pnl", "budgeting", "unit-economics", "forecasting", "valuation", "capital-allocation"],
-  Operations: ["sops", "kpis", "process-design", "project-management", "documentation", "quality", "delegation", "automation"],
-  Technology: ["ai", "software", "apis", "databases", "ux", "architecture", "data", "cybersecurity", "cloud"],
-  Product: ["problem-discovery", "customer-interviews", "mvps", "experimentation", "product-market-fit", "prioritization"],
-  Leadership: ["communication", "hiring", "management", "feedback", "conflict", "accountability", "culture"],
-  Thinking: ["first-principles", "systems-thinking", "critical-thinking", "probability", "decision-theory", "mental-models", "second-order-effects"],
-  "Human Behaviour": ["psychology", "behavioral-economics", "incentives", "cognitive-biases", "persuasion", "social-dynamics"],
-  "Personal Capability": ["discipline", "focus", "consistency", "resilience", "self-awareness", "courage", "responsibility", "delayed-gratification", "reflection"],
-  Network: ["networking", "relationships", "mentors", "partnerships", "reputation"],
-  Ownership: ["recurring-revenue", "business-structures", "governance", "capital", "portfolio-thinking", "risk-management", "owner-independence"],
+  Mind: ["responsibility", "focus", "discipline", "composure", "emotional-regulation", "self-awareness", "resilience", "courage", "reflection"],
+  Business: ["business-models", "value-creation", "markets", "positioning", "pricing", "customer-discovery", "strategy", "competitive-analysis"],
+  Finance: ["financial-statements", "cash-flow", "unit-economics", "gross-margin", "capital-allocation", "valuation", "forecasting"],
+  "Build · AI & Software": ["how-the-web-works", "programming", "git", "databases", "apis", "architecture", "debugging", "testing", "deployment", "ai-assisted-development", "prompting", "agents", "automation", "product-thinking"],
+  Influence: ["listening", "questioning", "reading-people", "reading-rooms", "persuasion", "negotiation", "storytelling", "sales", "public-speaking", "conflict"],
+  Judgement: ["first-principles", "decision-making", "probabilistic-thinking", "second-order-thinking", "systems-thinking", "mental-models", "cognitive-biases"],
+  Leadership: ["communication", "delegation", "feedback", "hiring", "accountability", "management"],
 };
 
 export const ALL_SKILLS: SkillId[] = Object.values(SKILL_CATEGORIES).flat();
@@ -43,7 +53,7 @@ export const SKILL_LEVELS = ["Unknown", "Aware", "Learning", "Practising", "Comp
 export const MAX_SKILL_LEVEL = SKILL_LEVELS.length - 1;
 
 const SKILL_LABEL_OVERRIDES: Record<SkillId, string> = {
-  pnl: "P&L", ai: "AI", apis: "APIs", ux: "UX", sops: "SOPs", kpis: "KPIs", mvps: "MVPs",
+  apis: "APIs", git: "Git", "ai-assisted-development": "AI-Assisted Development", "how-the-web-works": "How the Web Works",
 };
 export function skillLabel(id: SkillId): string {
   return SKILL_LABEL_OVERRIDES[id] ?? id.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
@@ -65,7 +75,7 @@ export function isReviewFormat(format: FormatId): boolean {
  * Every authored day, in order. To publish more of the programme, add a new
  * file under ./days and append it here; nothing else needs to change.
  */
-export const DAYS: CurriculumDay[] = [...PHASE1_MONTH1];
+export const DAYS: CurriculumDay[] = [...FOUNDATION_MONTH1];
 
 const DAY_INDEX = new Map(DAYS.map((d) => [d.day, d]));
 

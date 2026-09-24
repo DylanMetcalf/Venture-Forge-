@@ -57,7 +57,7 @@ describe("progress summary", () => {
 
 describe("skills", () => {
   it("derives practice and evidence counts from real sessions", () => {
-    const s = closeDay(defaultState(), 2, at(24));
+    const s = closeDay(defaultState(), 6, at(24));
     const st = skillStats(s);
     expect(st.get("focus")).toMatchObject({ practised: 1, evidence: 1, level: 0 });
     expect(st.get("pricing")).toMatchObject({ practised: 0, evidence: 0 });

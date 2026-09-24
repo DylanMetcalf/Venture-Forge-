@@ -22,6 +22,12 @@ export type FormatId =
 
 export type SkillId = string;
 
+/**
+ * The five capabilities the programme trains, interleaved through every week,
+ * plus "field" days (real-world missions and reviews that combine them).
+ */
+export type PillarId = "mind" | "business" | "build" | "influence" | "judgement" | "field";
+
 export interface Resource {
   type: "book" | "article" | "video" | "tool";
   title: string;
@@ -32,6 +38,7 @@ export interface Resource {
 export interface CurriculumDay {
   day: number;
   format: FormatId;
+  pillar: PillarId;
   theme: string;
   /** Today's objective: what you'll be able to do after this session. */
   capability: string;
@@ -53,7 +60,6 @@ export interface Phase {
   name: string;
   range: [number, number];
   focus: string;
-  stage: string;
 }
 
 export interface LibraryEntry {

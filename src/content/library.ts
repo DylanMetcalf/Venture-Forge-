@@ -1,69 +1,126 @@
-// Knowledge Library seed concepts. Grow this alongside the curriculum: every new
-// financial or business term a session introduces is a candidate entry.
+// Knowledge Library. Grow this alongside the curriculum: every new concept a
+// session introduces is a candidate entry. `related` may reference other entry ids.
 import type { LibraryEntry } from "./types";
 
 export const LIBRARY: LibraryEntry[] = [
   {
-    "id": "gross-margin",
-    "term": "Gross Margin",
-    "short": "What's left from a sale after the direct cost of producing it, as a percentage of the sale price.",
-    "medium": "Gross margin = (Revenue − Cost of Goods Sold) ÷ Revenue. It tells you how much of every rand of sales actually stays in the business before overheads like rent, salaries, or marketing are paid. A butchery selling meat at R150/kg that cost R100/kg to source has a gross margin of 33%.",
-    "application": "Use it to compare products or services within your own business — which one actually leaves you the most room to cover overheads and profit — not just which sells the most.",
-    "mistakes": "Confusing gross margin with net profit. A healthy gross margin can still result in a loss if overheads are too high.",
-    "related": [
-      "cash-flow",
-      "pnl",
-      "pricing"
-    ]
+    id: "revenue-profit-cash", term: "Revenue vs Profit vs Cash",
+    short: "Three different numbers: what you earned, what you kept, and what's actually in the bank.",
+    medium: "Revenue is everything earned from sales in a period, including money still owed. Profit is revenue minus all costs. Cash is what's in the bank right now. Timing gaps — customers paying late, costs paid early — mean a profitable business can still run out of cash.",
+    application: "When anyone tells you a business is “doing well”, ask which of the three numbers they mean.",
+    mistakes: "Treating “we're profitable” as “we're safe”. See the Day 29 case study.",
+    related: ["cash-flow", "gross-margin"],
   },
   {
-    "id": "cash-flow",
-    "term": "Cash Flow",
-    "short": "The actual movement of money in and out of the business, regardless of what's owed or earned on paper.",
-    "medium": "Cash flow is distinct from profit. A business can be profitable on paper and still run out of cash if payments are timed badly — money owed to you arrives late while money you owe goes out on time.",
-    "application": "Track cash flow separately from your P&L, especially if you extend payment terms to customers or hold physical stock.",
-    "mistakes": "Assuming 'we're profitable' means 'we're fine.' See the Day 25 case study.",
-    "related": [
-      "gross-margin",
-      "pnl",
-      "budgeting"
-    ]
+    id: "cash-flow", term: "Cash Flow",
+    short: "The actual movement of money in and out, whatever the accounts say was earned.",
+    medium: "Cash flow for a period = cash received − cash paid out. It's separate from profit: a business can be profitable on paper and still run out of cash if money owed to it arrives after money it owes goes out.",
+    application: "Model cash month by month whenever you take on fixed costs (salaries, rent, subscriptions) to fund revenue that arrives later.",
+    mistakes: "Assuming revenue on an invoice is money you can spend.",
+    related: ["revenue-profit-cash", "unit-economics"],
   },
   {
-    "id": "cac",
-    "term": "Customer Acquisition Cost (CAC)",
-    "short": "What it costs you, on average, to win one new paying customer.",
-    "medium": "CAC = total spend on acquiring customers over a period ÷ number of new customers gained in that period. It only becomes meaningful compared against Customer Lifetime Value (CLV) — a low CAC is worthless if the customer is worth even less.",
-    "application": "Before spending on ads or promotions, estimate CAC against what a customer is actually worth to you over time.",
-    "mistakes": "Counting only ad spend and ignoring the time cost of manual outreach, which is real cost even if no cash changes hands.",
-    "related": [
-      "retention",
-      "distribution",
-      "unit-economics"
-    ]
+    id: "gross-margin", term: "Gross Margin",
+    short: "The share of each sale left after the direct cost of producing it.",
+    medium: "Gross margin = (revenue − cost of goods sold) ÷ revenue. A software product selling for R400 a month that costs R100 a month to serve has a 75% gross margin. It shows how much of each sale is left to cover overheads and profit.",
+    application: "Compare products or services by margin, not just by sales volume. High-margin work gives you room to invest.",
+    mistakes: "Confusing gross margin with net profit. A great gross margin can still produce a loss if overheads are too high.",
+    related: ["unit-economics", "revenue-profit-cash"],
   },
   {
-    "id": "value-proposition",
-    "term": "Value Proposition",
-    "short": "A specific, one-sentence statement of who you help, what problem you solve, and why your way beats the alternative.",
-    "medium": "A strong value proposition names a specific customer and a specific pain, and states plainly why doing business with you beats their current alternative — including doing nothing.",
-    "application": "Use it as a test: if a sentence about your business could apply to almost any competitor, it isn't a value proposition yet.",
-    "mistakes": "Describing everything you do instead of the one sharpest true thing that matters most to the customer.",
-    "related": [
-      "positioning",
-      "pricing"
-    ]
+    id: "unit-economics", term: "Unit Economics",
+    short: "Whether you make or lose money on each unit — usually each customer — and how quickly you get it back.",
+    medium: "The core numbers are contribution per customer (price minus the cost of serving them), lifetime value (contribution × how long they stay), customer acquisition cost, and payback period (CAC ÷ monthly contribution).",
+    application: "Ask these questions first about any business you'd join, invest in or build. Rule of thumb: LTV at least 3× CAC, payback under about 12 months.",
+    mistakes: "Growing a business with broken unit economics. Growth just loses money faster.",
+    related: ["ltv", "cac", "gross-margin"],
   },
   {
-    "id": "reversible-decisions",
-    "term": "Reversible vs Irreversible Decisions",
-    "short": "A way of matching how much deliberation a decision deserves to how costly it actually is to get wrong.",
-    "medium": "Two-way-door decisions can be undone if they don't work. One-way-door decisions can't, or can't easily. Treating every decision like a one-way door is a common, quiet source of slowness and perfectionism.",
-    "application": "Before deliberating at length, ask: can I reverse this if it's wrong? If yes, decide fast and review the outcome later.",
-    "mistakes": "Using 'this could be reversed eventually, with enough cost and pain' as if that made it a two-way door — reversibility only counts if it's genuinely cheap.",
-    "related": [
-      "decision-theory",
-      "responsibility"
-    ]
-  }
+    id: "ltv", term: "Customer Lifetime Value (LTV)",
+    short: "The total contribution you expect from one customer over the whole relationship.",
+    medium: "LTV ≈ monthly contribution × average customer lifetime in months. If 5% of customers cancel each month, the average lifetime is about 1 ÷ 0.05 = 20 months.",
+    application: "It sets the ceiling on what you can afford to spend to win a customer.",
+    mistakes: "Using revenue instead of contribution, which overstates LTV.",
+    related: ["cac", "unit-economics"],
+  },
+  {
+    id: "cac", term: "Customer Acquisition Cost (CAC)",
+    short: "What it costs, on average, to win one new paying customer.",
+    medium: "CAC = total spend on acquiring customers in a period ÷ new customers won in that period. It only means something compared with lifetime value.",
+    application: "Before spending on ads or sales, estimate CAC against what a customer is worth over time.",
+    mistakes: "Counting only ad spend and ignoring the time cost of sales and outreach.",
+    related: ["ltv", "unit-economics"],
+  },
+  {
+    id: "value-based-pricing", term: "Value-Based Pricing",
+    short: "Pricing from what the outcome is worth to the buyer, not from what it cost you to make.",
+    medium: "Cost-plus pricing caps what you earn at hours or materials plus a margin. Value-based pricing asks what the buyer gains — time saved, risk removed, revenue added — and prices as a share of that.",
+    application: "Ask enough questions to find out what the problem costs the buyer before you name a number.",
+    mistakes: "Naming a price before understanding the value; anchoring to your own hourly rate.",
+    related: ["batna"],
+  },
+  {
+    id: "batna", term: "BATNA",
+    short: "Best Alternative To a Negotiated Agreement — what you'll do if there's no deal.",
+    medium: "Your BATNA is the real source of your negotiating power. Your walk-away point is where your BATNA becomes better than the deal on the table. Improving your BATNA before you negotiate usually beats any tactic used during it.",
+    application: "Before any negotiation, write down your BATNA, target, walk-away point and first offer.",
+    mistakes: "Negotiating without a BATNA, and letting the other side sense you can't walk away.",
+    related: ["anchoring"],
+  },
+  {
+    id: "anchoring", term: "Anchoring",
+    short: "The first number mentioned pulls later judgements towards it.",
+    medium: "A well-documented cognitive bias: people adjust from an initial number, but not enough. In negotiation, the first credible offer often shapes the final outcome.",
+    application: "Where you can, anchor first, ambitiously, and with a reason. When the other side anchors, re-anchor explicitly rather than negotiating from their number.",
+    mistakes: "Anchoring so far out that you lose credibility, or reflexively splitting the difference from their anchor.",
+    related: ["batna"],
+  },
+  {
+    id: "reversible-decisions", term: "One-Way and Two-Way Doors",
+    short: "Matching how long you deliberate to how costly the decision is to reverse.",
+    medium: "Two-way-door decisions can be undone cheaply if they don't work. One-way-door decisions can't. Treating every decision as a one-way door is a common, quiet source of slowness.",
+    application: "Ask: can I reverse this cheaply if it's wrong? If yes, decide fast and set a review date.",
+    mistakes: "Calling something reversible because it could be undone at great cost and pain. It only counts if undoing it is genuinely cheap.",
+    related: ["second-order-thinking", "calibration"],
+  },
+  {
+    id: "second-order-thinking", term: "Second-Order Thinking",
+    short: "Asking “and then what?” past the first consequence.",
+    medium: "First-order effects are immediate; second- and third-order effects follow from them. Good long-term choices often look worse at first order, and bad ones often look better.",
+    application: "For any significant decision, write out at least the second-order effects of each option.",
+    mistakes: "Stopping at the first consequence, or getting lost in endless speculation. Two or three levels is usually enough.",
+    related: ["reversible-decisions", "first-principles"],
+  },
+  {
+    id: "first-principles", term: "First-Principles Thinking",
+    short: "Reasoning from what's fundamentally true rather than from how things are usually done.",
+    medium: "Break a belief down by repeatedly asking why it's true, until you reach basic facts. Then rebuild from those facts to find options that analogy and convention hide.",
+    application: "Use it when you're stuck, or when “how it's always done” seems expensive or slow.",
+    mistakes: "Using it for every small decision. It's slow, so save it for the ones that matter.",
+    related: ["second-order-thinking"],
+  },
+  {
+    id: "calibration", term: "Calibration",
+    short: "Whether your confidence matches reality: your 70% calls should come true about 70% of the time.",
+    medium: "Write predictions with percentages, then score them. Most people are overconfident. Calibration improves only when you record and review.",
+    application: "Put numbers on important beliefs and review them monthly (the Day 19 → Day 30 exercise).",
+    mistakes: "“Resulting”: judging a decision only by its outcome, not by how good it was given what you knew.",
+    related: ["reversible-decisions"],
+  },
+  {
+    id: "affect-labeling", term: "Affect Labelling",
+    short: "Naming an emotion precisely, which tends to reduce its intensity.",
+    medium: "Research suggests that putting feelings into words (“I'm anxious about being judged”) dampens the emotional response. Combined with slow, extended exhales, it's a fast way to regain composure.",
+    application: "In a tense moment: one or two physiological sighs, then silently label the emotion before responding.",
+    mistakes: "Vague labels (“I feel bad”) — precision is what makes it work.",
+    related: [],
+  },
+  {
+    id: "version-control", term: "Version Control (Git)",
+    short: "A recorded history of every change to a project, so you can compare, undo and branch safely.",
+    medium: "Git stores snapshots called commits. Branches let you try changes in parallel and merge them back if they work. GitHub hosts Git repositories online.",
+    application: "Branch before letting an AI make large changes; review the diff before you merge.",
+    mistakes: "Giant commits with messages like “stuff” — you lose the ability to see what changed and why.",
+    related: [],
+  },
 ];

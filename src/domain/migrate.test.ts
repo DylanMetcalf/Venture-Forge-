@@ -47,9 +47,9 @@ describe("v1 migration", () => {
     expect(s.evidence.find((e) => e.id === "c")!.source).toEqual({ kind: "manual" });
   });
 
-  it("keeps known non-zero skill levels with a note that they were unjustified", () => {
+  it("keeps known non-zero self-ratings as confidence, with a note that they were unjustified", () => {
     expect(Object.keys(s.skills)).toEqual(["focus"]);
-    expect(s.skills.focus!.level).toBe(3);
+    expect(s.skills.focus!.level).toBe(2); // 3 on the old 0–8 scale → 2 on the 0–5 confidence scale
     expect(s.skills.focus!.history[0]!.note).toMatch(/Imported/);
   });
 
@@ -57,7 +57,7 @@ describe("v1 migration", () => {
     expect(s.projects[0]).toMatchObject({ name: "Butchery", stage: "Building" });
     expect(s.projects[0]!.createdAt).toMatch(/^\d{4}-/);
     expect(s.decisions).toHaveLength(1);
-    expect(s.ideas).toHaveLength(1);
+    expect(s.opportunities).toMatchObject([{ id: "i", title: "Meat box", status: "Captured" }]);
     expect(s.freedom.financial).toBe(40);
   });
 });

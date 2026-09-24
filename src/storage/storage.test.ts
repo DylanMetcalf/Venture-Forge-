@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { addProject } from "../domain/actions";
+import { addProject } from "../domain/projects";
 import { defaultState } from "../domain/types";
 import { createStore } from "../store/store";
 import { exportBackup, parseBackup } from "./backup";

@@ -1,5 +1,6 @@
 import type { CurriculumDay, FormatId, Phase, PillarId, SkillId } from "./types";
 import { FOUNDATION_MONTH1 } from "./days/foundation-month1";
+import { TRACKS } from "./tracks";
 
 export const PROGRAM_LENGTH = 365;
 
@@ -36,24 +37,14 @@ export const PILLARS: Record<PillarId, Pillar> = {
   field: { id: "field", name: "Field", tagline: "Real-world missions and reviews that combine everything." },
 };
 
-export const SKILL_CATEGORIES: Record<string, SkillId[]> = {
-  Mind: ["responsibility", "focus", "discipline", "composure", "emotional-regulation", "self-awareness", "resilience", "courage", "reflection"],
-  Business: ["business-models", "value-creation", "markets", "positioning", "pricing", "customer-discovery", "strategy", "competitive-analysis"],
-  Finance: ["financial-statements", "cash-flow", "unit-economics", "gross-margin", "capital-allocation", "valuation", "forecasting"],
-  "Build · AI & Software": ["how-the-web-works", "programming", "git", "databases", "apis", "architecture", "debugging", "testing", "deployment", "ai-assisted-development", "prompting", "agents", "automation", "product-thinking"],
-  Influence: ["listening", "questioning", "reading-people", "reading-rooms", "persuasion", "negotiation", "storytelling", "sales", "public-speaking", "conflict"],
-  Judgement: ["first-principles", "decision-making", "probabilistic-thinking", "second-order-thinking", "systems-thinking", "mental-models", "cognitive-biases"],
-  Leadership: ["communication", "delegation", "feedback", "hiring", "accountability", "management"],
-};
+/** Skill taxonomy, grouped by capability track (see ./tracks). */
+export const SKILL_CATEGORIES: Record<string, SkillId[]> = Object.fromEntries(TRACKS.map((t) => [t.name, t.skills]));
 
-export const ALL_SKILLS: SkillId[] = Object.values(SKILL_CATEGORIES).flat();
-
-/** Self-assessed levels. Index 0 is the default for every skill. */
-export const SKILL_LEVELS = ["Unknown", "Aware", "Learning", "Practising", "Competent", "Reliable", "Advanced", "Can Teach", "Can Systemise"] as const;
-export const MAX_SKILL_LEVEL = SKILL_LEVELS.length - 1;
+export const ALL_SKILLS: SkillId[] = TRACKS.flatMap((t) => t.skills);
 
 const SKILL_LABEL_OVERRIDES: Record<SkillId, string> = {
-  apis: "APIs", git: "Git", "ai-assisted-development": "AI-Assisted Development", "how-the-web-works": "How the Web Works",
+  apis: "APIs", git: "Git", ux: "UX", mvps: "MVPs", rag: "RAG", "llm-fundamentals": "LLM Fundamentals",
+  "ai-assisted-development": "AI-Assisted Development", "how-the-web-works": "How the Web Works", "ai-product-design": "AI Product Design",
 };
 export function skillLabel(id: SkillId): string {
   return SKILL_LABEL_OVERRIDES[id] ?? id.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");

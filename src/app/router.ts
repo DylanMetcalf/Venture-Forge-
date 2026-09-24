@@ -1,9 +1,10 @@
 import { useSyncExternalStore } from "react";
 
 export const ROUTES = [
-  "today", "session", "roadmap", "skills",
-  "projects", "evidence", "decisions", "ideas",
-  "library", "reviews", "freedom", "settings", "more",
+  "today", "checkin", "session", "mentor",
+  "projects", "experiments", "opportunities", "decisions",
+  "skills", "evidence", "reviews", "roadmap",
+  "memory", "library", "settings", "more",
 ] as const;
 export type RouteName = (typeof ROUTES)[number];
 

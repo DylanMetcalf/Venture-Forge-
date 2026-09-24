@@ -130,6 +130,7 @@ function syncSessionEvidence(state: AppState, day: number, now: Date): void {
       id: prev?.id ?? newId(),
       createdAt: prev?.createdAt ?? now.toISOString(),
       date: rec.closedOn ?? localDate(now),
+      kind: "session",
       title: `Day ${day} — ${content.theme}`,
       note: evidenceNote(rec),
       skills: [...content.skills],

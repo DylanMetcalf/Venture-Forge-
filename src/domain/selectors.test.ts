@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { assessSkill } from "./actions";
+import { rateConfidence } from "./actions";
 import { pillarStats, progressSummary, reviewEntries, skillStats, streak } from "./selectors";
 import { closeSession, commit, gradeCommitment, updateSession } from "./sessions";
 import { DomainError, defaultState, type AppState } from "./types";
@@ -65,9 +65,9 @@ describe("skills", () => {
 
   it("requires a justification to raise a level, and keeps history", () => {
     const s0 = defaultState();
-    expect(() => assessSkill(s0, "focus", 2, "  ", at(24))).toThrow(DomainError);
-    const s1 = assessSkill(s0, "focus", 2, "Held three 90-minute focus blocks this week", at(24));
-    const s2 = assessSkill(s1, "focus", 1, "", at(25));
+    expect(() => rateConfidence(s0, "focus", 2, "  ", at(24))).toThrow(DomainError);
+    const s1 = rateConfidence(s0, "focus", 2, "Held three 90-minute focus blocks this week", at(24));
+    const s2 = rateConfidence(s1, "focus", 1, "", at(25));
     expect(s2.skills.focus).toMatchObject({ level: 1 });
     expect(s2.skills.focus!.history).toHaveLength(2);
   });
